@@ -3,34 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aion Perfumería - Catálogo 100 Perfumes</title>
+<title>Aion Perfumería · Catálogo</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a0a;color:#f5f5f5;font-family:Inter,sans-serif;min-height:100vh}
+body{background:#0a0a0a;color:#f5f5f5;font-family:Inter,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
 .serif{font-family:"Instrument Serif",serif}
-.header{position:sticky;top:0;z-index:20;background:rgba(10,10,10,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.06)}
+button{font-family:inherit}
+.header{position:sticky;top:0;z-index:20;background:rgba(10,10,10,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.06)}
 .container{max-width:1280px;margin:0 auto;padding:0 20px}
 @media(min-width:768px){.container{padding:0 32px}}
-.search-input{width:100%;height:52px;background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:999px;padding:0 20px 0 46px;color:#f5f5f5;font-size:14px;outline:none;transition:border 0.2s}
-.search-input:focus{border-color:rgba(201,168,106,0.4)}
+
+.search-wrap{margin-top:22px;position:relative;max-width:560px}
+.search-input{width:100%;height:52px;background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:999px;padding:0 46px 0 46px;color:#f5f5f5;font-size:14px;outline:none;transition:border .2s,background .2s}
+.search-input:focus{border-color:rgba(201,168,106,0.5);background:#181818}
 .search-input::placeholder{color:rgba(255,255,255,0.35)}
-.btn{height:32px;padding:0 16px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,0.08);background:#151515;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.2s}
-.btn.active{background:#c9a86a;color:#0a0a0a;border-color:#c9a86a}
-.btn:hover{border-color:rgba(201,168,106,0.3);color:#c9a86a}
-.btn-primary{height:42px;padding:0 22px;border-radius:999px;background:#c9a86a;color:#0a0a0a;font-weight:500;border:none;cursor:pointer}
-.btn-ghost{height:42px;padding:0 22px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.12);color:#f5f5f5;cursor:pointer}
-.select{height:36px;padding:0 36px 0 16px;border-radius:999px;background:#151515;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);font-size:12.5px;appearance:none;cursor:pointer;outline:none}
+.search-icon{position:absolute;left:17px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,0.3);pointer-events:none;font-size:16px}
+.clear-search{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:999px;background:rgba(255,255,255,0.06);border:none;color:rgba(255,255,255,0.6);cursor:pointer;font-size:15px;line-height:1;display:none;align-items:center;justify-content:center}
+.clear-search:hover{background:rgba(255,255,255,0.12);color:#fff}
+
+.btn{height:32px;padding:0 14px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,0.08);background:#151515;color:rgba(255,255,255,0.6);cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn.active{background:#c9a86a;color:#0a0a0a;border-color:#c9a86a;font-weight:500}
+.btn:hover:not(.active){border-color:rgba(201,168,106,0.4);color:#c9a86a}
+.btn-primary{height:42px;padding:0 22px;border-radius:999px;background:#c9a86a;color:#0a0a0a;font-weight:500;border:none;cursor:pointer;transition:opacity .2s;font-size:12px}
+.btn-primary:hover{opacity:.88}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed}
+.btn-ghost{height:42px;padding:0 22px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.14);color:#f5f5f5;cursor:pointer;transition:all .2s;font-size:12px}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.03)}
+.btn-ghost:disabled{opacity:.35;cursor:not-allowed}
+
+.select{height:36px;padding:0 36px 0 16px;border-radius:999px;background:#151515;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);font-size:12.5px;appearance:none;cursor:pointer;outline:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 14px center;
+  transition:border-color .2s}
+.select:focus{border-color:rgba(201,168,106,0.5)}
+.select option{background:#151515;color:#f5f5f5}
+
 .grid{display:grid;grid-template-columns:1fr;gap:1px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);border-radius:20px;overflow:hidden;margin-top:24px}
 @media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
 @media(min-width:1024px){.grid{grid-template-columns:1fr 1fr 1fr}}
 @media(min-width:1280px){.grid{grid-template-columns:1fr 1fr 1fr 1fr}}
-.card{background:#151515;padding:22px;min-height:132px;display:flex;flex-direction:column;justify-content:space-between;transition:background 0.2s}
-.card:hover{background:#191919}
+.card{background:#151515;padding:22px;min-height:132px;display:flex;flex-direction:column;justify-content:space-between;transition:background .2s}
+.card:hover{background:#1a1a1a}
 .badge{font-size:10px;padding:4px 10px;border-radius:999px;border:1px solid}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 8px 0 12px;border-radius:999px;background:rgba(201,168,106,0.1);border:1px solid rgba(201,168,106,0.28);color:#c9a86a;font-size:11px}
+.chip button{background:none;border:none;color:#c9a86a;cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;border-radius:999px}
+.chip button:hover{background:rgba(201,168,106,0.18)}
+
 .legal{background:#1a1a1a;border:1px solid rgba(201,168,106,0.5);border-radius:16px;padding:20px;margin-top:40px}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#f5f5f5;color:#0a0a0a;padding:10px 18px;border-radius:999px;font-size:12px;font-weight:500;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:#f5f5f5;color:#0a0a0a;padding:10px 18px;border-radius:999px;font-size:12px;font-weight:500;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,0.4);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center}
+.filter-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.filter-label{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-right:4px}
 </style>
 </head>
 <body>
@@ -39,55 +69,61 @@ body{background:#0a0a0a;color:#f5f5f5;font-family:Inter,sans-serif;min-height:10
     <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:flex-start">
       <div>
         <h1 class="serif" style="font-size:32px;line-height:0.9;letter-spacing:-0.02em">AION <span style="font-style:italic;font-weight:400;color:#c9a86a">Perfumería</span></h1>
-        <p style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:8px">Catálogo · 100 Esencias · Filtrado Inteligente</p>
+        <p style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:8px">
+          Catálogo · <span id="totalCount">0</span> Esencias · Filtrado Inteligente
+        </p>
       </div>
       <div style="display:flex;gap:10px">
-        <button class="btn-ghost" onclick="copyList()" style="font-size:12px">Copiar lista</button>
-        <button class="btn-primary" onclick="exportPDF()" style="font-size:12px">Exportar PDF filtrado</button>
+        <button id="copyBtn" class="btn-ghost" onclick="copyList()">Copiar lista</button>
+        <button id="pdfBtn" class="btn-primary" onclick="exportPDF()">Exportar PDF</button>
       </div>
     </div>
-    <div style="margin-top:22px;position:relative;max-width:560px">
-      <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,0.3)">⌕</span>
-      <input id="search" class="search-input" placeholder="Buscar perfume o diseñador... Ej: Yara, Dior, Sauvage" oninput="render()">
+
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input id="search" class="search-input" type="search" autocomplete="off" placeholder="Buscar perfume, diseñador o familia… Ej: Yara, Dior, Árabe" oninput="onSearch()" onkeydown="if(event.key==='Escape'){clearSearch()}">
+      <button class="clear-search" id="clearSearchBtn" onclick="clearSearch()" aria-label="Limpiar búsqueda">×</button>
     </div>
   </div>
 </div>
 
 <div class="container" style="padding-top:28px;padding-bottom:60px">
-  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center">
-    <p id="counter" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.4)">Mostrando 100 de 100</p>
-    <button onclick="resetAll()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:11px;text-decoration:underline;cursor:pointer">Ver lista completa</button>
+  <div class="row">
+    <p id="counter" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.4)">Cargando…</p>
+    <div style="display:flex;gap:10px;align-items:center">
+      <label for="sort" style="font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:0.1em;text-transform:uppercase">Orden</label>
+      <select id="sort" class="select" onchange="setSort(this.value)" aria-label="Ordenar resultados">
+        <option value="catalog">Catálogo</option>
+        <option value="az">Nombre A–Z</option>
+        <option value="za">Nombre Z–A</option>
+        <option value="designer">Por diseñador</option>
+      </select>
+    </div>
   </div>
 
   <div style="margin-top:20px;display:flex;flex-direction:column;gap:18px">
-    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
-      <span style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-right:4px">Segmento</span>
-      <button class="btn active" data-segment="Todos" onclick="setSegment(this)">Todos</button>
-      <button class="btn" data-segment="Mujer" onclick="setSegment(this)">Mujer</button>
-      <button class="btn" data-segment="Hombre" onclick="setSegment(this)">Hombre</button>
-      <button class="btn" data-segment="Unisex" onclick="setSegment(this)">Unisex</button>
+    <div class="filter-row">
+      <span class="filter-label">Segmento</span>
+      <div id="segmentButtons" class="filter-row" role="group" aria-label="Filtrar por segmento"></div>
     </div>
-    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
-      <span style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-right:4px">Familia</span>
-      <button class="btn active" data-family="Todas" onclick="setFamily(this)">Todas</button>
-      <button class="btn" data-family="Dulce" onclick="setFamily(this)">Dulce</button>
-      <button class="btn" data-family="Floral" onclick="setFamily(this)">Floral</button>
-      <button class="btn" data-family="Fresco" onclick="setFamily(this)">Fresco</button>
-      <button class="btn" data-family="Amaderado" onclick="setFamily(this)">Amaderado</button>
-      <button class="btn" data-family="Árabe" onclick="setFamily(this)">Árabe</button>
-      <button class="btn" data-family="Nicho" onclick="setFamily(this)">Nicho</button>
+    <div class="filter-row">
+      <span class="filter-label">Familia</span>
+      <div id="familyButtons" class="filter-row" role="group" aria-label="Filtrar por familia olfativa"></div>
     </div>
-    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
-      <span style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-right:4px">Diseñador</span>
-      <select id="designer" class="select" onchange="render()"></select>
+    <div class="filter-row">
+      <span class="filter-label">Diseñador</span>
+      <select id="designer" class="select" onchange="render()" aria-label="Filtrar por diseñador" style="min-width:200px"></select>
       <span id="designerCount" style="font-size:11px;color:rgba(255,255,255,0.3)"></span>
     </div>
+
+    <div id="activeChips" class="chips" style="display:none"></div>
   </div>
 
-  <div id="grid" class="grid"></div>
-  <div id="empty" style="display:none;text-align:center;padding:80px 20px;background:#151515;border-radius:20px;margin-top:24px;border:1px solid rgba(255,255,255,0.06)">
-    <p>Sin resultados</p>
-    <p style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:6px">Prueba con otro filtro</p>
+  <div id="grid" class="grid" aria-live="polite"></div>
+  <div id="empty" style="display:none;text-align:center;padding:70px 20px;background:#151515;border-radius:20px;margin-top:24px;border:1px solid rgba(255,255,255,0.06)">
+    <p style="font-size:15px;font-weight:500">Sin resultados</p>
+    <p style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:6px">Prueba con otros filtros o limpia la búsqueda</p>
+    <button class="btn-primary" style="margin-top:20px" onclick="resetAll()">Limpiar filtros</button>
   </div>
 
   <div class="legal">
@@ -95,156 +131,274 @@ body{background:#0a0a0a;color:#f5f5f5;font-family:Inter,sans-serif;min-height:10
       <div style="width:32px;height:32px;border-radius:999px;border:1px solid rgba(201,168,106,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:11px;color:#c9a86a">§</span></div>
       <div>
         <div style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(201,168,106,0.7);margin-bottom:8px">Aviso Legal</div>
-        <p style="font-size:11px;line-height:1.6;color:#aaa">AION PERFUMERIA NO UTILIZA SUS FRAGANCIAS Y NO ESTÁ ASOCIADO DE NINGÚN MODO CON LAS MARCAS DE DISEÑADORES O SUS FABRICANTES. Vendemos perfumes inspirados en diseñadores/marcas que se utilizan con fines de referencia a los aromas y aclaramos en atención al artículo 213 de la Ley de Propiedad Industrial que no guardan ningún tipo de relación o asociación con las marcas o nombres que se mencionan. Los nombres, marcas y derechos de autor son propiedad de sus respectivos diseñadores/fabricantes. No son copias exactas y no compite con la marca diseñadora.</p>
+        <p style="font-size:11px;line-height:1.6;color:#aaa">AION PERFUMERÍA NO UTILIZA SUS FRAGANCIAS Y NO ESTÁ ASOCIADO DE NINGÚN MODO CON LAS MARCAS DE DISEÑADORES O SUS FABRICANTES. Vendemos perfumes inspirados en diseñadores/marcas que se utilizan con fines de referencia a los aromas y aclaramos en atención al artículo 213 de la Ley de Propiedad Industrial que no guardan ningún tipo de relación o asociación con las marcas o nombres que se mencionan. Los nombres, marcas y derechos de autor son propiedad de sus respectivos diseñadores/fabricantes. No son copias exactas y no compite con la marca diseñadora.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div id="toast" class="toast" style="display:none"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
+/* ---------------- DATA ---------------- */
 const perfumes = [
-{completo:"Good Girl - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
-{completo:"Black Opium - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Mujer", familia:"Dulce"},
-{completo:"Cloud - Ariana Grande", disenador:"Ariana Grande", segmento:"Mujer", familia:"Dulce"},
-{completo:"J'adore - Dior", disenador:"Dior", segmento:"Mujer", familia:"Floral"},
-{completo:"My Way - Giorgio Armani", disenador:"Giorgio Armani", segmento:"Mujer", familia:"Floral"},
-{completo:"Be Delicious - DKNY", disenador:"DKNY", segmento:"Mujer", familia:"Fresco"},
-{completo:"Daisy - Marc Jacobs", disenador:"Marc Jacobs", segmento:"Mujer", familia:"Fresco"},
-{completo:"La Vie Est Belle - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Dulce"},
-{completo:"212 - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Fresco"},
-{completo:"Burberry Her - Burberry", disenador:"Burberry", segmento:"Mujer", familia:"Dulce"},
-{completo:"Light Blue - Dolce & Gabbana", disenador:"Dolce & Gabbana", segmento:"Mujer", familia:"Fresco"},
-{completo:"Meow - Katy Perry", disenador:"Katy Perry", segmento:"Mujer", familia:"Dulce"},
-{completo:"Scandal - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
-{completo:"Olympéa - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Mujer", familia:"Dulce"},
-{completo:"Chance - Chanel", disenador:"Chanel", segmento:"Mujer", familia:"Floral"},
-{completo:"Fantasy - Britney Spears", disenador:"Britney Spears", segmento:"Mujer", familia:"Dulce"},
-{completo:"Pure XS - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Mujer", familia:"Dulce"},
-{completo:"Halloween - Halloween", disenador:"Halloween", segmento:"Mujer", familia:"Floral"},
-{completo:"Yara - Lattafa", disenador:"Lattafa", segmento:"Mujer", familia:"Árabe"},
-{completo:"Born in Roma - Valentino", disenador:"Valentino", segmento:"Mujer", familia:"Dulce"},
-{completo:"La Belle - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
-{completo:"Eilish - Billie Eilish", disenador:"Billie Eilish", segmento:"Mujer", familia:"Dulce"},
-{completo:"Crystal Noir - Versace", disenador:"Versace", segmento:"Mujer", familia:"Amaderado"},
-{completo:"212 VIP Rosé - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
-{completo:"Paris - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Mujer", familia:"Floral"},
-{completo:"Sauvage - Dior", disenador:"Dior", segmento:"Hombre", familia:"Fresco"},
-{completo:"Invictus - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Amaderado"},
-{completo:"Acqua di Giò - Giorgio Armani", disenador:"Giorgio Armani", segmento:"Hombre", familia:"Fresco"},
-{completo:"One Million - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Dulce"},
-{completo:"Bleu de Chanel - Chanel", disenador:"Chanel", segmento:"Hombre", familia:"Amaderado"},
-{completo:"Le Male - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Hombre", familia:"Dulce"},
-{completo:"Aventus - Creed", disenador:"Creed", segmento:"Hombre", familia:"Nicho"},
-{completo:"Polo Blue - Ralph Lauren", disenador:"Ralph Lauren", segmento:"Hombre", familia:"Fresco"},
-{completo:"One Million Lucky - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Amaderado"},
-{completo:"Eros - Versace", disenador:"Versace", segmento:"Hombre", familia:"Amaderado"},
-{completo:"Eternity - Calvin Klein", disenador:"Calvin Klein", segmento:"Hombre", familia:"Fresco"},
-{completo:"Allure Homme Sport - Chanel", disenador:"Chanel", segmento:"Hombre", familia:"Fresco"},
-{completo:"212 VIP Black - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Hombre", familia:"Amaderado"},
-{completo:"Y - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Hombre", familia:"Amaderado"},
-{completo:"Bad Boy - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Hombre", familia:"Amaderado"},
-{completo:"Stronger With You - Emporio Armani", disenador:"Emporio Armani", segmento:"Hombre", familia:"Dulce"},
-{completo:"Le Beau - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Hombre", familia:"Dulce"},
-{completo:"Layton - Parfums de Marly", disenador:"Parfums de Marly", segmento:"Unisex", familia:"Nicho"},
-{completo:"Club de Nuit Intense Man - Armaf", disenador:"Armaf", segmento:"Hombre", familia:"Árabe"},
-{completo:"Spicebomb - Viktor & Rolf", disenador:"Viktor & Rolf", segmento:"Hombre", familia:"Amaderado"},
-{completo:"Phantom - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Amaderado"},
-{completo:"Dylan Blue - Versace", disenador:"Versace", segmento:"Hombre", familia:"Amaderado"},
-{completo:"Boss Bottled - Hugo Boss", disenador:"Hugo Boss", segmento:"Hombre", familia:"Amaderado"},
-{completo:"L'Immensité - Louis Vuitton", disenador:"Louis Vuitton", segmento:"Hombre", familia:"Nicho"},
-{completo:"Imagination - Louis Vuitton", disenador:"Louis Vuitton", segmento:"Hombre", familia:"Nicho"},
-{completo:"Sauvage Elixir - Dior", disenador:"Dior", segmento:"Hombre", familia:"Amaderado"},
-{completo:"Tobacco Vanille - Tom Ford", disenador:"Tom Ford", segmento:"Unisex", familia:"Nicho"},
-{completo:"Ombre Leather - Tom Ford", disenador:"Tom Ford", segmento:"Unisex", familia:"Nicho"},
-{completo:"Toy Boy - Moschino", disenador:"Moschino", segmento:"Hombre", familia:"Amaderado"},
-{completo:"La Vie est Belle L'Elixir - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Dulce"},
-{completo:"La Belle Flower Edition - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Floral"},
-{completo:"Flora Gorgeous Gardenia - Gucci", disenador:"Gucci", segmento:"Mujer", familia:"Floral"},
-{completo:"Good Girl La Bomba - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
-{completo:"Very Good Girl Elixir - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
-{completo:"Khamrah - Lattafa", disenador:"Lattafa", segmento:"Unisex", familia:"Árabe"},
-{completo:"Yara - Lattafa (2)", disenador:"Lattafa", segmento:"Mujer", familia:"Árabe"},
-{completo:"Nebras - Lattafa", disenador:"Lattafa", segmento:"Mujer", familia:"Árabe"},
-{completo:"Yara Tous - Lattafa", disenador:"Lattafa", segmento:"Mujer", familia:"Árabe"},
-{completo:"Paradoxe Intense - Prada", disenador:"Prada", segmento:"Mujer", familia:"Floral"},
-{completo:"Goddess Intense - Burberry", disenador:"Burberry", segmento:"Mujer", familia:"Amaderado"},
-{completo:"Goddess - Burberry", disenador:"Burberry", segmento:"Mujer", familia:"Amaderado"},
-{completo:"Hypnotic Poison - Dior", disenador:"Dior", segmento:"Mujer", familia:"Dulce"},
-{completo:"La Nuit Trésor - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Dulce"},
-{completo:"Idôle - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Floral"},
-{completo:"Thank U, Next - Ariana Grande", disenador:"Ariana Grande", segmento:"Mujer", familia:"Dulce"},
-{completo:"Ari - Ariana Grande", disenador:"Ariana Grande", segmento:"Mujer", familia:"Dulce"},
-{completo:"Born in Roma - Valentino (2)", disenador:"Valentino", segmento:"Mujer", familia:"Dulce"},
-{completo:"Libre L'Absolu Platine - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Mujer", familia:"Amaderado"},
-{completo:"Devotion - Dolce & Gabbana", disenador:"Dolce & Gabbana", segmento:"Mujer", familia:"Dulce"},
-{completo:"Fame Parfum - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Mujer", familia:"Dulce"},
-{completo:"Miss Dior Absolutely Blooming - Dior", disenador:"Dior", segmento:"Mujer", familia:"Floral"},
-{completo:"Gaultier Divine - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Floral"},
-{completo:"Daisy Wild - Marc Jacobs", disenador:"Marc Jacobs", segmento:"Mujer", familia:"Fresco"},
-{completo:"Solo Ella - Loewe", disenador:"Loewe", segmento:"Mujer", familia:"Floral"},
-{completo:"Scandal Gold - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
-{completo:"Scandal Absolu - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
-{completo:"Chance Eau Splendide - Chanel", disenador:"Chanel", segmento:"Mujer", familia:"Floral"},
-{completo:"LoveMe The Emerald Elixir - Tous", disenador:"Tous", segmento:"Mujer", familia:"Dulce"},
-{completo:"Idôle Now - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Floral"},
-{completo:"Baccarat Rouge 540 - Maison Francis Kurkdjian", disenador:"Maison Francis Kurkdjian", segmento:"Unisex", familia:"Nicho"},
-{completo:"Santal 33 - Le Labo", disenador:"Le Labo", segmento:"Unisex", familia:"Nicho"},
-{completo:"Oud Wood - Tom Ford", disenador:"Tom Ford", segmento:"Unisex", familia:"Nicho"},
-{completo:"Erba Pura - Xerjoff", disenador:"Xerjoff", segmento:"Unisex", familia:"Nicho"},
-{completo:"Layton - Parfums de Marly (2)", disenador:"Parfums de Marly", segmento:"Unisex", familia:"Nicho"}
+  {completo:"Good Girl - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Black Opium - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Cloud - Ariana Grande", disenador:"Ariana Grande", segmento:"Mujer", familia:"Dulce"},
+  {completo:"J'adore - Dior", disenador:"Dior", segmento:"Mujer", familia:"Floral"},
+  {completo:"My Way - Giorgio Armani", disenador:"Giorgio Armani", segmento:"Mujer", familia:"Floral"},
+  {completo:"Be Delicious - DKNY", disenador:"DKNY", segmento:"Mujer", familia:"Fresco"},
+  {completo:"Daisy - Marc Jacobs", disenador:"Marc Jacobs", segmento:"Mujer", familia:"Fresco"},
+  {completo:"La Vie Est Belle - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Dulce"},
+  {completo:"212 - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Fresco"},
+  {completo:"Burberry Her - Burberry", disenador:"Burberry", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Light Blue - Dolce & Gabbana", disenador:"Dolce & Gabbana", segmento:"Mujer", familia:"Fresco"},
+  {completo:"Meow - Katy Perry", disenador:"Katy Perry", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Scandal - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Olympéa - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Chance - Chanel", disenador:"Chanel", segmento:"Mujer", familia:"Floral"},
+  {completo:"Fantasy - Britney Spears", disenador:"Britney Spears", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Pure XS - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Halloween - Halloween", disenador:"Halloween", segmento:"Mujer", familia:"Floral"},
+  {completo:"Yara - Lattafa", disenador:"Lattafa", segmento:"Mujer", familia:"Árabe"},
+  {completo:"Born in Roma - Valentino", disenador:"Valentino", segmento:"Mujer", familia:"Dulce"},
+  {completo:"La Belle - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Eilish - Billie Eilish", disenador:"Billie Eilish", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Crystal Noir - Versace", disenador:"Versace", segmento:"Mujer", familia:"Amaderado"},
+  {completo:"212 VIP Rosé - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Paris - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Mujer", familia:"Floral"},
+  {completo:"Sauvage - Dior", disenador:"Dior", segmento:"Hombre", familia:"Fresco"},
+  {completo:"Invictus - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"Acqua di Giò - Giorgio Armani", disenador:"Giorgio Armani", segmento:"Hombre", familia:"Fresco"},
+  {completo:"One Million - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Dulce"},
+  {completo:"Bleu de Chanel - Chanel", disenador:"Chanel", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"Le Male - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Hombre", familia:"Dulce"},
+  {completo:"Aventus - Creed", disenador:"Creed", segmento:"Hombre", familia:"Nicho"},
+  {completo:"Polo Blue - Ralph Lauren", disenador:"Ralph Lauren", segmento:"Hombre", familia:"Fresco"},
+  {completo:"One Million Lucky - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"Eros - Versace", disenador:"Versace", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"Eternity - Calvin Klein", disenador:"Calvin Klein", segmento:"Hombre", familia:"Fresco"},
+  {completo:"Allure Homme Sport - Chanel", disenador:"Chanel", segmento:"Hombre", familia:"Fresco"},
+  {completo:"212 VIP Black - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"Y - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"Bad Boy - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"Stronger With You - Emporio Armani", disenador:"Emporio Armani", segmento:"Hombre", familia:"Dulce"},
+  {completo:"Le Beau - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Hombre", familia:"Dulce"},
+  {completo:"Layton - Parfums de Marly", disenador:"Parfums de Marly", segmento:"Unisex", familia:"Nicho"},
+  {completo:"Club de Nuit Intense Man - Armaf", disenador:"Armaf", segmento:"Hombre", familia:"Árabe"},
+  {completo:"Spicebomb - Viktor & Rolf", disenador:"Viktor & Rolf", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"Phantom - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"Dylan Blue - Versace", disenador:"Versace", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"Boss Bottled - Hugo Boss", disenador:"Hugo Boss", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"L'Immensité - Louis Vuitton", disenador:"Louis Vuitton", segmento:"Hombre", familia:"Nicho"},
+  {completo:"Imagination - Louis Vuitton", disenador:"Louis Vuitton", segmento:"Hombre", familia:"Nicho"},
+  {completo:"Sauvage Elixir - Dior", disenador:"Dior", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"Tobacco Vanille - Tom Ford", disenador:"Tom Ford", segmento:"Unisex", familia:"Nicho"},
+  {completo:"Ombre Leather - Tom Ford", disenador:"Tom Ford", segmento:"Unisex", familia:"Nicho"},
+  {completo:"Toy Boy - Moschino", disenador:"Moschino", segmento:"Hombre", familia:"Amaderado"},
+  {completo:"La Vie est Belle L'Elixir - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Dulce"},
+  {completo:"La Belle Flower Edition - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Floral"},
+  {completo:"Flora Gorgeous Gardenia - Gucci", disenador:"Gucci", segmento:"Mujer", familia:"Floral"},
+  {completo:"Good Girl La Bomba - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Very Good Girl Elixir - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Khamrah - Lattafa", disenador:"Lattafa", segmento:"Unisex", familia:"Árabe"},
+  {completo:"Nebras - Lattafa", disenador:"Lattafa", segmento:"Mujer", familia:"Árabe"},
+  {completo:"Yara Tous - Lattafa", disenador:"Lattafa", segmento:"Mujer", familia:"Árabe"},
+  {completo:"Paradoxe Intense - Prada", disenador:"Prada", segmento:"Mujer", familia:"Floral"},
+  {completo:"Goddess Intense - Burberry", disenador:"Burberry", segmento:"Mujer", familia:"Amaderado"},
+  {completo:"Goddess - Burberry", disenador:"Burberry", segmento:"Mujer", familia:"Amaderado"},
+  {completo:"Hypnotic Poison - Dior", disenador:"Dior", segmento:"Mujer", familia:"Dulce"},
+  {completo:"La Nuit Trésor - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Idôle - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Floral"},
+  {completo:"Thank U, Next - Ariana Grande", disenador:"Ariana Grande", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Ari - Ariana Grande", disenador:"Ariana Grande", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Libre L'Absolu Platine - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Mujer", familia:"Amaderado"},
+  {completo:"Devotion - Dolce & Gabbana", disenador:"Dolce & Gabbana", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Fame Parfum - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Miss Dior Absolutely Blooming - Dior", disenador:"Dior", segmento:"Mujer", familia:"Floral"},
+  {completo:"Gaultier Divine - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Floral"},
+  {completo:"Daisy Wild - Marc Jacobs", disenador:"Marc Jacobs", segmento:"Mujer", familia:"Fresco"},
+  {completo:"Solo Ella - Loewe", disenador:"Loewe", segmento:"Mujer", familia:"Floral"},
+  {completo:"Scandal Gold - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Scandal Absolu - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Chance Eau Splendide - Chanel", disenador:"Chanel", segmento:"Mujer", familia:"Floral"},
+  {completo:"LoveMe The Emerald Elixir - Tous", disenador:"Tous", segmento:"Mujer", familia:"Dulce"},
+  {completo:"Idôle Now - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Floral"},
+  {completo:"Baccarat Rouge 540 - Maison Francis Kurkdjian", disenador:"Maison Francis Kurkdjian", segmento:"Unisex", familia:"Nicho"},
+  {completo:"Santal 33 - Le Labo", disenador:"Le Labo", segmento:"Unisex", familia:"Nicho"},
+  {completo:"Oud Wood - Tom Ford", disenador:"Tom Ford", segmento:"Unisex", familia:"Nicho"},
+  {completo:"Erba Pura - Xerjoff", disenador:"Xerjoff", segmento:"Unisex", familia:"Nicho"}
 ];
 
+/* ---------------- ESTADO ---------------- */
 let currentSegment = "Todos";
-let currentFamily = "Todas";
-let filteredCache = [];
+let currentFamily  = "Todas";
+let currentSort    = "catalog";
+let filteredCache  = [];
+let searchTimer    = null;
 
-const designers = [...new Set(perfumes.map(p=>p.disenador))].sort();
+const SEGMENTS = ["Todos", "Mujer", "Hombre", "Unisex"];
+const FAMILIES = ["Todas", "Dulce", "Floral", "Fresco", "Amaderado", "Árabe", "Nicho"];
+
+/* ---------------- SETUP ---------------- */
+document.getElementById('totalCount').textContent = perfumes.length;
+
+// Segment buttons
+const segWrap = document.getElementById('segmentButtons');
+SEGMENTS.forEach(s=>{
+  const count = s === "Todos" ? perfumes.length : perfumes.filter(p=>p.segmento===s).length;
+  const b = document.createElement('button');
+  b.className = 'btn' + (s === "Todos" ? ' active' : '');
+  b.dataset.segment = s;
+  b.textContent = `${s} · ${count}`;
+  b.setAttribute('aria-pressed', s === "Todos");
+  b.onclick = () => setSegment(b);
+  segWrap.appendChild(b);
+});
+
+// Family buttons
+const famWrap = document.getElementById('familyButtons');
+FAMILIES.forEach(f=>{
+  const count = f === "Todas" ? perfumes.length : perfumes.filter(p=>p.familia===f).length;
+  const b = document.createElement('button');
+  b.className = 'btn' + (f === "Todas" ? ' active' : '');
+  b.dataset.family = f;
+  b.textContent = `${f} · ${count}`;
+  b.setAttribute('aria-pressed', f === "Todas");
+  b.onclick = () => setFamily(b);
+  famWrap.appendChild(b);
+});
+
+// Designer select
+const designers = [...new Set(perfumes.map(p=>p.disenador))].sort((a,b)=>a.localeCompare(b,'es'));
 const sel = document.getElementById('designer');
-sel.innerHTML = '<option value="Todos">Todos los diseñadores</option>' + designers.map(d=>`<option value="${d}">${d}</option>`).join('');
+sel.innerHTML = '<option value="Todos">Todos los diseñadores</option>' +
+  designers.map(d=>`<option value="${d}">${d}</option>`).join('');
 document.getElementById('designerCount').textContent = designers.length + ' casas';
 
+/* ---------------- FILTROS ---------------- */
 function setSegment(btn){
-  document.querySelectorAll('[data-segment]').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('[data-segment]').forEach(b=>{
+    b.classList.remove('active');
+    b.setAttribute('aria-pressed','false');
+  });
   btn.classList.add('active');
+  btn.setAttribute('aria-pressed','true');
   currentSegment = btn.dataset.segment;
   render();
 }
 function setFamily(btn){
-  document.querySelectorAll('[data-family]').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('[data-family]').forEach(b=>{
+    b.classList.remove('active');
+    b.setAttribute('aria-pressed','false');
+  });
   btn.classList.add('active');
+  btn.setAttribute('aria-pressed','true');
   currentFamily = btn.dataset.family;
   render();
 }
-function resetAll(){
-  currentSegment="Todos"; currentFamily="Todas";
-  document.querySelectorAll('[data-segment]').forEach(b=>b.classList.toggle('active', b.dataset.segment==='Todos'));
-  document.querySelectorAll('[data-family]').forEach(b=>b.classList.toggle('active', b.dataset.family==='Todas'));
-  document.getElementById('search').value='';
-  document.getElementById('designer').value='Todos';
+function setSort(v){ currentSort = v; render(); }
+
+function clearSearch(){
+  document.getElementById('search').value = '';
   render();
 }
+
+function onSearch(){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(render, 150);
+}
+
+function resetAll(){
+  currentSegment = "Todos";
+  currentFamily  = "Todas";
+  document.querySelectorAll('[data-segment]').forEach(b=>{
+    const on = b.dataset.segment === "Todos";
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on);
+  });
+  document.querySelectorAll('[data-family]').forEach(b=>{
+    const on = b.dataset.family === "Todas";
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on);
+  });
+  document.getElementById('search').value = '';
+  document.getElementById('designer').value = 'Todos';
+  document.getElementById('sort').value = 'catalog';
+  currentSort = 'catalog';
+  render();
+}
+
+/* ---------------- FILTRADO ---------------- */
 function getFiltered(){
   const q = document.getElementById('search').value.toLowerCase().trim();
   const d = document.getElementById('designer').value;
   return perfumes.filter(p=>{
-    if(currentSegment!=="Todos" && p.segmento!==currentSegment) return false;
-    if(currentFamily!=="Todas" && p.familia!==currentFamily) return false;
-    if(d!=="Todos" && p.disenador!==d) return false;
-    if(q && !(p.completo.toLowerCase().includes(q) || p.disenador.toLowerCase().includes(q))) return false;
+    if(currentSegment !== "Todos" && p.segmento !== currentSegment) return false;
+    if(currentFamily  !== "Todas" && p.familia   !== currentFamily)  return false;
+    if(d !== "Todos" && p.disenador !== d) return false;
+    if(q){
+      const hay = (p.completo + ' ' + p.disenador + ' ' + p.familia + ' ' + p.segmento).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
     return true;
   });
 }
+
+function getSorted(list){
+  const arr = [...list];
+  switch(currentSort){
+    case 'az':       return arr.sort((a,b)=>a.completo.localeCompare(b.completo,'es'));
+    case 'za':       return arr.sort((a,b)=>b.completo.localeCompare(a.completo,'es'));
+    case 'designer': return arr.sort((a,b)=>a.disenador.localeCompare(b.disenador,'es') || a.completo.localeCompare(b.completo,'es'));
+    default:         return arr;
+  }
+}
+
+/* ---------------- RENDER ---------------- */
 function render(){
-  const filtered = getFiltered();
+  const filtered = getSorted(getFiltered());
   filteredCache = filtered;
-  document.getElementById('counter').textContent = `Mostrando ${filtered.length} de ${perfumes.length}`;
-  const grid = document.getElementById('grid');
+
+  // Contador
+  document.getElementById('counter').textContent =
+    `Mostrando ${filtered.length} de ${perfumes.length} perfumes`;
+
+  // Botones de acción
+  document.getElementById('copyBtn').disabled = filtered.length === 0;
+  document.getElementById('pdfBtn').disabled  = filtered.length === 0;
+
+  // Chip de filtros activos
+  renderChips();
+
+  // Mostrar / ocultar botón limpiar búsqueda
+  const searchVal = document.getElementById('search').value;
+  document.getElementById('clearSearchBtn').style.display = searchVal ? 'flex' : 'none';
+
+  // Grid
+  const grid  = document.getElementById('grid');
   const empty = document.getElementById('empty');
-  if(filtered.length===0){ grid.innerHTML=''; empty.style.display='block'; return; }
-  empty.style.display='none';
-  grid.innerHTML = filtered.map(p=>`
+
+  if(filtered.length === 0){
+    grid.innerHTML = '';
+    grid.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  grid.style.display = 'grid';
+
+  grid.innerHTML = filtered.map(p => {
+    const segColor = p.segmento === 'Mujer' ? '#f5c2d0'
+                   : p.segmento === 'Hombre' ? '#9ec8ff'
+                   : '#c9a86a';
+    const segBg    = p.segmento === 'Mujer' ? 'rgba(245,194,208,0.06)'
+                   : p.segmento === 'Hombre' ? 'rgba(158,200,255,0.06)'
+                   : 'rgba(201,168,106,0.08)';
+    const segBorder = p.segmento === 'Mujer' ? 'rgba(245,194,208,0.2)'
+                    : p.segmento === 'Hombre' ? 'rgba(158,200,255,0.2)'
+                    : 'rgba(201,168,106,0.25)';
+    return `
     <div class="card">
       <div style="display:flex;justify-content:space-between;gap:12px">
         <h3 style="font-size:14px;line-height:1.28;font-weight:500">${p.completo}</h3>
@@ -252,41 +406,143 @@ function render(){
       </div>
       <div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:6px">
         <span class="badge" style="border-color:rgba(201,168,106,0.2);color:#c9a86a;background:rgba(201,168,106,0.08)">${p.disenador}</span>
-        <span class="badge" style="border-color:${p.segmento==='Mujer'?'rgba(245,194,208,0.2)':p.segmento==='Hombre'?'rgba(158,200,255,0.2)':'rgba(201,168,106,0.25)'};color:${p.segmento==='Mujer'?'#f5c2d0':p.segmento==='Hombre'?'#9ec8ff':'#c9a86a'};background:${p.segmento==='Mujer'?'rgba(245,194,208,0.06)':p.segmento==='Hombre'?'rgba(158,200,255,0.06)':'rgba(201,168,106,0.08)'}">${p.segmento}</span>
+        <span class="badge" style="border-color:${segBorder};color:${segColor};background:${segBg}">${p.segmento}</span>
         <span class="badge" style="border-color:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.03)">${p.familia}</span>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
+
+function renderChips(){
+  const wrap = document.getElementById('activeChips');
+  const items = [];
+  if(currentSegment !== 'Todos') items.push({label: currentSegment, action: ()=>resetChip('segment')});
+  if(currentFamily  !== 'Todas') items.push({label: currentFamily,  action: ()=>resetChip('family')});
+  const d = document.getElementById('designer').value;
+  if(d !== 'Todos')              items.push({label: d,              action: ()=>resetChip('designer')});
+  const q = document.getElementById('search').value.trim();
+  if(q)                          items.push({label: `"${q}"`,      action: ()=>resetChip('search')});
+
+  if(items.length === 0){ wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = 'flex';
+  wrap.innerHTML = items.map((it, i) =>
+    `<span class="chip">${it.label}<button data-chip="${i}" aria-label="Quitar filtro">×</button></span>`
+  ).join('');
+  wrap.querySelectorAll('button[data-chip]').forEach(btn=>{
+    btn.onclick = items[+btn.dataset.chip].action;
+  });
+}
+
+function resetChip(type){
+  if(type === 'segment'){
+    currentSegment = 'Todos';
+    document.querySelectorAll('[data-segment]').forEach(b=>{
+      const on = b.dataset.segment === 'Todos';
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on);
+    });
+  } else if(type === 'family'){
+    currentFamily = 'Todas';
+    document.querySelectorAll('[data-family]').forEach(b=>{
+      const on = b.dataset.family === 'Todas';
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on);
+    });
+  } else if(type === 'designer'){
+    document.getElementById('designer').value = 'Todos';
+  } else if(type === 'search'){
+    document.getElementById('search').value = '';
+  }
+  render();
+}
+
+/* ---------------- TOAST ---------------- */
+let toastTimer = null;
 function showToast(msg){
-  const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block';
-  setTimeout(()=>t.style.display='none',2500);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
 }
+
+/* ---------------- COPIAR ---------------- */
 function copyList(){
+  if(filteredCache.length === 0){ showToast('No hay perfumes para copiar'); return; }
   const text = filteredCache.map((p,i)=>`${i+1}. ${p.completo}`).join('\n');
-  navigator.clipboard.writeText(text).then(()=>showToast(`Copiados ${filteredCache.length} perfumes`));
+  const done = () => showToast(`✓ ${filteredCache.length} perfumes copiados`);
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text, done));
+  } else {
+    fallbackCopy(text, done);
+  }
 }
+function fallbackCopy(text, cb){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); cb(); }
+  catch(e){ showToast('No se pudo copiar'); }
+  document.body.removeChild(ta);
+}
+
+/* ---------------- PDF ---------------- */
 function exportPDF(){
+  if(filteredCache.length === 0){ showToast('No hay perfumes para exportar'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   const now = new Date().toLocaleDateString('es-MX');
-  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text('AION PERFUMERIA - Catalogo Filtrado',14,20);
-  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text(`Fecha: ${now} | Mostrando ${filteredCache.length} de ${perfumes.length} perfumes`,14,28);
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.text('AION PERFUMERIA - Catalogo', 14, 20);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(10);
+  doc.text(`Fecha: ${now}  |  Mostrando ${filteredCache.length} de ${perfumes.length} perfumes`, 14, 28);
+
+  // Filtros aplicados
+  const filters = [];
+  if(currentSegment !== 'Todos') filters.push(`Segmento: ${currentSegment}`);
+  if(currentFamily  !== 'Todas') filters.push(`Familia: ${currentFamily}`);
+  const dSel = document.getElementById('designer').value;
+  if(dSel !== 'Todos') filters.push(`Disenador: ${dSel}`);
+  const qNow = document.getElementById('search').value.trim();
+  if(qNow) filters.push(`Busqueda: "${qNow}"`);
+  if(filters.length){
+    doc.setFontSize(8);
+    doc.setTextColor(120);
+    doc.text('Filtros: ' + filters.join('  ·  '), 14, 34);
+    doc.setTextColor(0);
+  }
+
+  let y = 44;
   doc.setFontSize(9);
-  let y=38;
   filteredCache.forEach((p,i)=>{
-    if(y>270){ doc.addPage(); y=20; }
-    doc.text(`${i+1}. ${p.completo} | ${p.disenador} | ${p.segmento} | ${p.familia}`,14,y);
-    y+=6;
+    const line = `${i+1}. ${p.completo} | ${p.disenador} | ${p.segmento} | ${p.familia}`;
+    const wrapped = doc.splitTextToSize(line, 182);
+    const needed = wrapped.length * 5 + 1;
+    if(y + needed > 275){ doc.addPage(); y = 20; }
+    doc.text(wrapped, 14, y);
+    y += needed;
   });
-  y+=10; if(y>250){ doc.addPage(); y=20; }
-  doc.setFontSize(7); doc.setTextColor(120);
+
+  y += 8;
+  if(y > 250){ doc.addPage(); y = 20; }
+  doc.setFontSize(7);
+  doc.setTextColor(120);
   const legal = "AION PERFUMERIA NO UTILIZA SUS FRAGANCIAS Y NO ESTA ASOCIADO DE NINGUN MODO CON LAS MARCAS DE DISENADORES O SUS FABRICANTES. Vendemos perfumes inspirados en disenadores/marcas que se utilizan con fines de referencia a los aromas y aclaramos en atencion al articulo 213 de la Ley de Propiedad Industrial que no guardan ningun tipo de relacion o asociacion con las marcas o nombres que se mencionan. Los nombres, marcas y derechos de autor son propiedad de sus respectivos disenadores/fabricantes. No son copias exactas y no compite con la marca disenadora.";
-  const split = doc.splitTextToSize(legal, 180);
-  doc.text(split,14,y);
-  doc.save(`Aion-Catalogo-Filtrado-${filteredCache.length}.pdf`);
+  const split = doc.splitTextToSize(legal, 182);
+  doc.text(split, 14, y);
+
+  doc.save(`Aion-Catalogo-${filteredCache.length}.pdf`);
   showToast('PDF exportado');
 }
+
+/* ---------------- INIT ---------------- */
 render();
 </script>
 </body>
