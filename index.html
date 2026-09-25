@@ -4,814 +4,180 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>AION Perfumería // Catálogo</title>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <style>
-  /* ═══════════════════════════════════════════════════════════
-     🎯 DESIGN TOKENS
-     ═══════════════════════════════════════════════════════════ */
-  :root {
-    --color-ember-orange: #ff4d00;
-    --color-foundry-black: #121212;
-    --color-chalk-white: #e2e8f0;
-    --color-bone-white: #efefef;
-    --color-soot: #3a3a3a;
-    --color-ash: #747474;
+  :root{
+    --color-ember-orange:#ff4d00;--color-foundry-black:#121212;--color-chalk-white:#e2e8f0;
+    --color-bone-white:#efefef;--color-soot:#3a3a3a;--color-ash:#747474;
+    --font-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --font-inter:'Inter',ui-sans-serif,system-ui,sans-serif;
+    --font-display:'Archivo Black',Impact,sans-serif;
+    --text-caption:12px;--text-body-sm:14px;
+    --spacing-4:4px;--spacing-8:8px;--spacing-12:12px;--spacing-20:20px;--spacing-24:24px;
+    --radius-sm:2.8px;
+    --surface-canvas:#121212;--surface-inverted:#efefef;
+    --sidebar-width:260px;--page-max-width:1440px;--ticker-height:28px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  body{background:var(--surface-canvas);color:var(--color-bone-white);font-family:var(--font-mono);font-size:var(--text-body-sm);line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;overflow-x:hidden;max-width:100vw}
+  button,a,.tag,.btn,.select,.chip{touch-action:manipulation}
+  img,svg,canvas,video{max-width:100%;height:auto;display:block}
 
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    --font-inter: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Archivo Black', Impact, sans-serif;
+  /* TICKER */
+  .ticker{position:fixed;top:0;left:0;right:0;height:var(--ticker-height);background:var(--surface-canvas);border-bottom:1px solid var(--color-chalk-white);overflow:hidden;z-index:100;display:flex;align-items:center}
+  .ticker__track{display:flex;gap:var(--spacing-20);white-space:nowrap;animation:ticker-scroll 42s linear infinite;font-size:var(--text-caption);text-transform:uppercase;letter-spacing:.04em;color:var(--color-bone-white);padding-left:var(--spacing-20);will-change:transform}
+  .ticker__track span{display:inline-flex;align-items:center;gap:var(--spacing-20)}
+  .ticker__track span::after{content:'';width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--color-ember-orange);display:inline-block}
+  .ticker__track span:last-child::after{display:none}
+  @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-    --text-caption: 12px;
-    --text-body-sm: 14px;
-    --text-body: 16px;
+  /* SIDEBAR */
+  .sidebar{position:fixed;top:var(--ticker-height);left:0;bottom:0;width:var(--sidebar-width);background:var(--surface-canvas);border-right:1px solid var(--color-chalk-white);padding:var(--spacing-24) var(--spacing-20);display:flex;flex-direction:column;gap:var(--spacing-20);overflow-y:auto;overscroll-behavior:contain;z-index:50}
+  .sidebar::-webkit-scrollbar{width:4px}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--color-soot)}
+  .sidebar::-webkit-scrollbar-track{background:transparent}
+  .logo{font-family:var(--font-display);font-size:22px;line-height:0.95;color:var(--color-ember-orange);text-transform:uppercase;letter-spacing:-.01em;margin-bottom:var(--spacing-4)}
+  .sb-group{margin-bottom:var(--spacing-4);min-width:0}
+  .sb-label{font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--color-bone-white);margin-bottom:var(--spacing-8);display:flex;align-items:center;gap:var(--spacing-8)}
+  .sb-label::before{content:'';width:8px;height:8px;border-left:1px solid var(--color-bone-white);border-bottom:1px solid var(--color-bone-white);display:inline-block}
+  .search-box{position:relative}
+  .search-input{width:100%;height:36px;background:transparent;border:1px solid var(--color-chalk-white);border-radius:var(--radius-sm);padding:0 34px 0 12px;color:var(--color-bone-white);font-family:var(--font-mono);font-size:var(--text-caption);outline:none;transition:border-color .12s ease;-webkit-appearance:none;appearance:none}
+  .search-input:focus{border-color:var(--color-ember-orange)}
+  .search-input::placeholder{color:var(--color-ash)}
+  input[type="search"]::-webkit-search-decoration,input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-results-button,input[type="search"]::-webkit-search-results-decoration{-webkit-appearance:none;appearance:none;display:none}
+  .clear-search{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:var(--radius-sm);background:transparent;border:none;color:var(--color-ash);cursor:pointer;font-size:15px;line-height:1;display:none;align-items:center;justify-content:center}
+  .clear-search:hover{color:var(--color-ember-orange)}
+  .sb-tags{display:flex;flex-direction:column;gap:var(--spacing-4)}
+  .tag{display:flex;align-items:center;justify-content:space-between;gap:var(--spacing-8);padding:7px 10px;background:transparent;color:var(--color-bone-white);border:1px solid transparent;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:var(--text-caption);font-weight:400;text-transform:uppercase;letter-spacing:.04em;text-decoration:none;cursor:pointer;transition:background-color .12s ease,border-color .12s ease,color .12s ease;text-align:left;width:100%;min-width:0}
+  .tag:hover{border-color:var(--color-chalk-white)}
+  .tag.active{background:var(--surface-inverted);color:var(--surface-canvas);border-color:var(--color-bone-white)}
+  .tag__count{font-size:10px;color:var(--color-ash);flex-shrink:0}
+  .tag.active .tag__count{color:var(--surface-canvas)}
+  .select{width:100%;height:36px;padding:0 30px 0 12px;background:transparent;border:1px solid var(--color-chalk-white);border-radius:var(--radius-sm);color:var(--color-bone-white);font-family:var(--font-mono);font-size:var(--text-caption);appearance:none;-webkit-appearance:none;cursor:pointer;outline:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23e2e8f0' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 10px center;transition:border-color .12s ease}
+  .select:focus{border-color:var(--color-ember-orange)}
+  .select option{background:var(--surface-canvas);color:var(--color-bone-white)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;border-radius:var(--radius-sm);background:transparent;font-family:var(--font-mono);font-size:var(--text-caption);font-weight:400;text-transform:uppercase;letter-spacing:.04em;text-decoration:none;cursor:pointer;transition:background-color .12s ease,color .12s ease;white-space:nowrap;border:1px solid transparent;min-height:40px}
+  .btn--orange{border-color:var(--color-ember-orange);color:var(--color-ember-orange)}
+  .btn--orange:hover:not(:disabled){background:var(--color-ember-orange);color:var(--surface-canvas)}
+  .btn--ghost{border-color:var(--color-bone-white);color:var(--color-bone-white)}
+  .btn--ghost:hover:not(:disabled){background:var(--color-bone-white);color:var(--surface-canvas)}
+  .btn:disabled{opacity:.3;cursor:not-allowed}
+  .btn--full{width:100%}
+  .sb-actions{display:flex;flex-direction:column;gap:var(--spacing-8)}
+  .sb-footer{margin-top:auto;padding-top:var(--spacing-20);border-top:1px solid var(--color-soot);font-size:var(--text-caption);color:var(--color-ash);text-transform:uppercase;letter-spacing:.04em;display:flex;flex-direction:column;gap:var(--spacing-8)}
+  .sb-footer a{color:var(--color-ash);text-decoration:none;cursor:pointer}
+  .sb-footer a:hover{color:var(--color-ember-orange)}
 
-    --spacing-4: 4px;
-    --spacing-8: 8px;
-    --spacing-12: 12px;
-    --spacing-20: 20px;
-    --spacing-24: 24px;
+  /* MAIN */
+  .main{margin-left:var(--sidebar-width);margin-top:var(--ticker-height);max-width:calc(var(--page-max-width) - var(--sidebar-width));min-width:0}
+  .hero{padding:clamp(40px,8vw,80px) var(--spacing-24) var(--spacing-24);border-bottom:1px solid var(--color-chalk-white)}
+  .hero__meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--spacing-12);font-family:var(--font-mono);font-size:var(--text-caption);text-transform:uppercase;letter-spacing:.04em;color:var(--color-bone-white);margin-bottom:var(--spacing-24)}
+  .hero__meta .meta-item{display:inline-flex;align-items:center;gap:6px}
+  .hero__meta .dot{width:6px;height:6px;border-radius:50%;background:var(--color-ember-orange);display:inline-block}
+  .hero h1{font-family:var(--font-display);font-weight:400;font-size:clamp(2.5rem,12vw,150px);line-height:.92;letter-spacing:.01em;color:var(--color-bone-white);text-transform:uppercase;margin-bottom:var(--spacing-20);word-break:break-word;overflow-wrap:anywhere}
+  .hero h1 .accent{color:var(--color-ember-orange)}
+  .hero__copy{font-family:var(--font-inter);font-size:var(--text-body-sm);line-height:1.5;color:var(--color-bone-white);max-width:55ch}
+  .counter-strip{padding:var(--spacing-12) var(--spacing-24);border-bottom:1px solid var(--color-chalk-white);font-family:var(--font-mono);font-size:var(--text-caption);text-transform:uppercase;letter-spacing:.04em;display:flex;justify-content:space-between;align-items:center;gap:var(--spacing-12);flex-wrap:wrap}
+  .counter-strip .count{color:var(--color-ember-orange);font-weight:700}
+  .sort-wrap{display:flex;align-items:center;gap:var(--spacing-8)}
+  .sort-wrap label{color:var(--color-ash);font-size:11px}
+  .sort-wrap .select{width:auto;height:30px;padding:0 26px 0 10px;font-size:11px}
+  .chips{display:flex;flex-wrap:wrap;gap:var(--spacing-8);padding:var(--spacing-12) var(--spacing-24);border-bottom:1px solid var(--color-chalk-white)}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 4px 4px 10px;border-radius:var(--radius-sm);border:1px solid var(--color-ember-orange);color:var(--color-ember-orange);font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.04em;max-width:100%}
+  .chip button{background:transparent;border:none;color:var(--color-ember-orange);cursor:pointer;font-size:14px;line-height:1;padding:0 4px;border-radius:var(--radius-sm)}
+  .chip button:hover{background:var(--color-ember-orange);color:var(--surface-canvas)}
 
-    --radius-sm: 2.8px;
+  .grid{display:grid;grid-template-columns:1fr;border-left:1px solid var(--color-chalk-white);border-top:1px solid var(--color-chalk-white)}
+  @media (min-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (min-width:1100px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media (min-width:1500px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+  .card{border-right:1px solid var(--color-chalk-white);border-bottom:1px solid var(--color-chalk-white);padding:var(--spacing-20);display:flex;flex-direction:column;gap:var(--spacing-12);transition:background-color .12s ease;min-height:clamp(160px,22vw,200px);position:relative;min-width:0}
+  .card:hover{background:#181818}
+  .card__strip{display:flex;justify-content:space-between;align-items:center;gap:var(--spacing-8);font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  .card__idx{color:var(--color-ember-orange);font-weight:700}
+  .card__fam{color:var(--color-ash);text-align:right}
+  .card__name{font-family:var(--font-display);font-weight:400;font-size:clamp(1.1rem,2.2vw,1.9rem);line-height:.98;letter-spacing:.005em;color:var(--color-bone-white);text-transform:uppercase;word-break:break-word;overflow-wrap:anywhere}
+  .card__meta{display:flex;flex-wrap:wrap;gap:var(--spacing-4);margin-top:auto}
+  .badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.04em;border:1px solid var(--color-soot);color:var(--color-ash);max-width:100%;overflow-wrap:anywhere}
+  .badge--orange{border-color:var(--color-ember-orange);color:var(--color-ember-orange)}
+  .badge--bone{border-color:var(--color-chalk-white);color:var(--color-bone-white)}
 
-    --surface-canvas: #121212;
-    --surface-inverted: #efefef;
+  .empty{display:none;padding:80px var(--spacing-24);text-align:center;border-bottom:1px solid var(--color-chalk-white)}
+  .empty__title{font-family:var(--font-display);font-size:clamp(1.8rem,6vw,3rem);text-transform:uppercase;color:var(--color-bone-white);line-height:.95;margin-bottom:var(--spacing-8)}
+  .empty__title .accent{color:var(--color-ember-orange)}
+  .empty__sub{font-family:var(--font-mono);font-size:var(--text-caption);color:var(--color-ash);text-transform:uppercase;letter-spacing:.04em;margin-bottom:var(--spacing-20)}
 
-    --sidebar-width: 260px;
-    --page-max-width: 1440px;
-    --ticker-height: 28px;
-  }
+  .legal{padding:var(--spacing-24);border-bottom:1px solid var(--color-chalk-white);display:flex;gap:var(--spacing-12);flex-wrap:wrap}
+  .legal__mark{flex-shrink:0;width:28px;height:28px;border:1px solid var(--color-ember-orange);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--color-ember-orange);font-size:12px;font-weight:700}
+  .legal > div:last-child{min-width:0;flex:1 1 260px}
+  .legal__title{font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--color-ember-orange);margin-bottom:var(--spacing-8)}
+  .legal__body{font-family:var(--font-mono);font-size:11px;line-height:1.65;color:var(--color-ash);text-transform:uppercase;letter-spacing:.02em;overflow-wrap:anywhere}
+  .footer{padding:var(--spacing-24);font-family:var(--font-mono);font-size:var(--text-caption);text-transform:uppercase;letter-spacing:.04em;color:var(--color-ash);display:flex;justify-content:space-between;flex-wrap:wrap;gap:var(--spacing-8)}
+  .toast{position:fixed;bottom:max(24px,env(safe-area-inset-bottom,24px));left:50%;transform:translateX(-50%) translateY(10px);background:var(--color-bone-white);color:var(--surface-canvas);padding:10px 18px;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:var(--text-caption);font-weight:700;text-transform:uppercase;letter-spacing:.04em;z-index:200;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;max-width:calc(100vw - 32px);text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html {
-    scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+  @media (max-width:900px){
+    :root{--ticker-height:24px;--sidebar-width:100%}
+    input,select,textarea{font-size:16px!important}
+    .ticker__track{font-size:10px;animation-duration:26s}
+    .sidebar{position:relative;top:0;margin-top:var(--ticker-height);width:100%;max-width:100%;border-right:none;border-bottom:1px solid var(--color-chalk-white);flex-direction:column;padding:var(--spacing-20);max-height:none;overflow:visible;overscroll-behavior:auto}
+    .sb-tags{flex-direction:row;flex-wrap:wrap}
+    .sb-tags .tag{width:auto;flex:0 1 auto}
+    .sb-actions{flex-direction:row;flex-wrap:wrap}
+    .sb-actions .btn{flex:1 1 auto}
+    .search-input{height:44px;padding:0 40px 0 14px}
+    .select{height:44px}
+    .sort-wrap .select{height:40px}
+    .main{margin-left:0;margin-top:0;max-width:100%}
+    .hero{padding:var(--spacing-24) var(--spacing-20)}
+    .hero h1{font-size:clamp(2.25rem,13vw,5rem)}
+    .counter-strip,.chips{padding-left:var(--spacing-20);padding-right:var(--spacing-20)}
+    .legal{padding:var(--spacing-20)}
   }
-
-  /* ═══════════════════════════════════════════════════════════
-     ⬛ CANVAS
-     ═══════════════════════════════════════════════════════════ */
-  body {
-    background: var(--surface-canvas);
-    color: var(--color-bone-white);
-    font-family: var(--font-mono);
-    font-size: var(--text-body-sm);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-    min-height: 100dvh;
-    overflow-x: hidden;
-    max-width: 100vw;
+  @media (max-width:640px){
+    .hero__meta{font-size:10px;gap:8px}
+    .counter-strip{flex-direction:column;align-items:flex-start;gap:var(--spacing-8)}
+    .sort-wrap{width:100%;justify-content:space-between}
+    .sort-wrap .select{flex:1;max-width:220px}
+    .card{padding:var(--spacing-20);min-height:150px}
+    .footer{padding:var(--spacing-20)}
+    .legal__mark{width:24px;height:24px;font-size:11px}
+    .legal__body{font-size:10px}
   }
-
-  /* Fast taps on mobile */
-  button, a, .tag, .btn, .select, .chip {
-    touch-action: manipulation;
+  @media (max-width:400px){
+    .logo{font-size:20px}
+    .sb-actions{flex-direction:column}
+    .sb-actions .btn{width:100%}
+    .hero h1{font-size:clamp(2rem,12vw,3rem)}
   }
-
-  img, svg, canvas, video {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  /* ═══════════════════════════════════════════════════════════
-     📰 TICKER
-     ═══════════════════════════════════════════════════════════ */
-  .ticker {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: var(--ticker-height);
-    background: var(--surface-canvas);
-    border-bottom: 1px solid var(--color-chalk-white);
-    overflow: hidden;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-  }
-  .ticker__track {
-    display: flex;
-    gap: var(--spacing-20);
-    white-space: nowrap;
-    animation: ticker-scroll 42s linear infinite;
-    font-size: var(--text-caption);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-bone-white);
-    padding-left: var(--spacing-20);
-    will-change: transform;
-  }
-  .ticker__track span {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-20);
-  }
-  .ticker__track span::after {
-    content: '';
-    width: 0; height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 7px solid var(--color-ember-orange);
-    display: inline-block;
-  }
-  .ticker__track span:last-child::after { display: none; }
-  @keyframes ticker-scroll {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-
-  /* ═══════════════════════════════════════════════════════════
-     📌 SIDEBAR
-     ═══════════════════════════════════════════════════════════ */
-  .sidebar {
-    position: fixed;
-    top: var(--ticker-height);
-    left: 0; bottom: 0;
-    width: var(--sidebar-width);
-    background: var(--surface-canvas);
-    border-right: 1px solid var(--color-chalk-white);
-    padding: var(--spacing-24) var(--spacing-20);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-20);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    z-index: 50;
-  }
-  .sidebar::-webkit-scrollbar { width: 4px; }
-  .sidebar::-webkit-scrollbar-thumb { background: var(--color-soot); }
-  .sidebar::-webkit-scrollbar-track { background: transparent; }
-
-  .logo {
-    font-family: var(--font-display);
-    font-size: 22px;
-    line-height: 0.95;
-    color: var(--color-ember-orange);
-    text-transform: uppercase;
-    letter-spacing: -0.01em;
-    margin-bottom: var(--spacing-4);
-  }
-
-  .sb-group { margin-bottom: var(--spacing-4); min-width: 0; }
-
-  .sb-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-bone-white);
-    margin-bottom: var(--spacing-8);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-8);
-  }
-  .sb-label::before {
-    content: '';
-    width: 8px; height: 8px;
-    border-left: 1px solid var(--color-bone-white);
-    border-bottom: 1px solid var(--color-bone-white);
-    display: inline-block;
-  }
-
-  /* SEARCH */
-  .search-box { position: relative; }
-  .search-input {
-    width: 100%;
-    height: 36px;
-    background: transparent;
-    border: 1px solid var(--color-chalk-white);
-    border-radius: var(--radius-sm);
-    padding: 0 34px 0 12px;
-    color: var(--color-bone-white);
-    font-family: var(--font-mono);
-    font-size: var(--text-caption);
-    outline: none;
-    transition: border-color 0.12s ease;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  .search-input:focus { border-color: var(--color-ember-orange); }
-  .search-input::placeholder { color: var(--color-ash); }
-
-  /* Kill native iOS search clear decorations */
-  input[type="search"]::-webkit-search-decoration,
-  input[type="search"]::-webkit-search-cancel-button,
-  input[type="search"]::-webkit-search-results-button,
-  input[type="search"]::-webkit-search-results-decoration {
-    -webkit-appearance: none;
-    appearance: none;
-    display: none;
-  }
-
-  .clear-search {
-    position: absolute;
-    right: 6px; top: 50%;
-    transform: translateY(-50%);
-    width: 24px; height: 24px;
-    border-radius: var(--radius-sm);
-    background: transparent;
-    border: none;
-    color: var(--color-ash);
-    cursor: pointer;
-    font-size: 15px;
-    line-height: 1;
-    display: none;
-    align-items: center;
-    justify-content: center;
-  }
-  .clear-search:hover { color: var(--color-ember-orange); }
-
-  /* TAGS */
-  .sb-tags {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-4);
-  }
-  .tag {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-8);
-    padding: 7px 10px;
-    background: transparent;
-    color: var(--color-bone-white);
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
-    font-size: var(--text-caption);
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
-    text-align: left;
-    width: 100%;
-    min-width: 0;
-  }
-  .tag:hover { border-color: var(--color-chalk-white); }
-  .tag.active {
-    background: var(--surface-inverted);
-    color: var(--surface-canvas);
-    border-color: var(--color-bone-white);
-  }
-  .tag__count {
-    font-size: 10px;
-    color: var(--color-ash);
-    flex-shrink: 0;
-  }
-  .tag.active .tag__count { color: var(--surface-canvas); }
-
-  /* SELECT */
-  .select {
-    width: 100%;
-    height: 36px;
-    padding: 0 30px 0 12px;
-    background: transparent;
-    border: 1px solid var(--color-chalk-white);
-    border-radius: var(--radius-sm);
-    color: var(--color-bone-white);
-    font-family: var(--font-mono);
-    font-size: var(--text-caption);
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-    outline: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23e2e8f0' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    transition: border-color 0.12s ease;
-  }
-  .select:focus { border-color: var(--color-ember-orange); }
-  .select option { background: var(--surface-canvas); color: var(--color-bone-white); }
-
-  /* BOTONES */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 10px 14px;
-    border-radius: var(--radius-sm);
-    background: transparent;
-    font-family: var(--font-mono);
-    font-size: var(--text-caption);
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.12s ease, color 0.12s ease;
-    white-space: nowrap;
-    border: 1px solid transparent;
-    min-height: 40px;
-  }
-  .btn--orange {
-    border-color: var(--color-ember-orange);
-    color: var(--color-ember-orange);
-  }
-  .btn--orange:hover:not(:disabled) {
-    background: var(--color-ember-orange);
-    color: var(--surface-canvas);
-  }
-  .btn--ghost {
-    border-color: var(--color-bone-white);
-    color: var(--color-bone-white);
-  }
-  .btn--ghost:hover:not(:disabled) {
-    background: var(--color-bone-white);
-    color: var(--surface-canvas);
-  }
-  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  .btn--full { width: 100%; }
-
-  .sb-actions { display: flex; flex-direction: column; gap: var(--spacing-8); }
-
-  /* FOOTER */
-  .sb-footer {
-    margin-top: auto;
-    padding-top: var(--spacing-20);
-    border-top: 1px solid var(--color-soot);
-    font-size: var(--text-caption);
-    color: var(--color-ash);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-8);
-  }
-  .sb-footer a {
-    color: var(--color-ash);
-    text-decoration: none;
-    cursor: pointer;
-  }
-  .sb-footer a:hover { color: var(--color-ember-orange); }
-
-  /* ═══════════════════════════════════════════════════════════
-     🖥️ MAIN
-     ═══════════════════════════════════════════════════════════ */
-  .main {
-    margin-left: var(--sidebar-width);
-    margin-top: var(--ticker-height);
-    max-width: calc(var(--page-max-width) - var(--sidebar-width));
-    min-width: 0;
-  }
-
-  /* HERO */
-  .hero {
-    padding: clamp(40px, 8vw, 80px) var(--spacing-24) var(--spacing-24);
-    border-bottom: 1px solid var(--color-chalk-white);
-  }
-  .hero__meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--spacing-12);
-    font-family: var(--font-mono);
-    font-size: var(--text-caption);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-bone-white);
-    margin-bottom: var(--spacing-24);
-  }
-  .hero__meta .meta-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .hero__meta .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--color-ember-orange);
-    display: inline-block;
-  }
-  .hero h1 {
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: clamp(2.5rem, 12vw, 150px);
-    line-height: 0.92;
-    letter-spacing: 0.01em;
-    color: var(--color-bone-white);
-    text-transform: uppercase;
-    margin-bottom: var(--spacing-20);
-    word-break: break-word;
-    overflow-wrap: anywhere;
-  }
-  .hero h1 .accent { color: var(--color-ember-orange); }
-  .hero__copy {
-    font-family: var(--font-inter);
-    font-size: var(--text-body-sm);
-    line-height: 1.5;
-    color: var(--color-bone-white);
-    max-width: 55ch;
-  }
-
-  /* COUNTER */
-  .counter-strip {
-    padding: var(--spacing-12) var(--spacing-24);
-    border-bottom: 1px solid var(--color-chalk-white);
-    font-family: var(--font-mono);
-    font-size: var(--text-caption);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-12);
-    flex-wrap: wrap;
-  }
-  .counter-strip .count { color: var(--color-ember-orange); font-weight: 700; }
-
-  .sort-wrap {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-8);
-  }
-  .sort-wrap label { color: var(--color-ash); font-size: 11px; }
-  .sort-wrap .select {
-    width: auto;
-    height: 30px;
-    padding: 0 26px 0 10px;
-    font-size: 11px;
-  }
-
-  /* CHIPS */
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-8);
-    padding: var(--spacing-12) var(--spacing-24);
-    border-bottom: 1px solid var(--color-chalk-white);
-  }
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 4px 4px 10px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--color-ember-orange);
-    color: var(--color-ember-orange);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    max-width: 100%;
-  }
-  .chip button {
-    background: transparent;
-    border: none;
-    color: var(--color-ember-orange);
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 1;
-    padding: 0 4px;
-    border-radius: var(--radius-sm);
-  }
-  .chip button:hover {
-    background: var(--color-ember-orange);
-    color: var(--surface-canvas);
-  }
-
-  /* GRID */
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    border-left: 1px solid var(--color-chalk-white);
-    border-top: 1px solid var(--color-chalk-white);
-  }
-
-  @media (min-width: 700px)  { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (min-width: 1100px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (min-width: 1500px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-
-  .card {
-    border-right: 1px solid var(--color-chalk-white);
-    border-bottom: 1px solid var(--color-chalk-white);
-    padding: var(--spacing-20);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-12);
-    transition: background-color 0.12s ease;
-    min-height: clamp(160px, 22vw, 200px);
-    position: relative;
-    min-width: 0;
-  }
-  .card:hover { background: #181818; }
-
-  .card__strip {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-8);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .card__idx { color: var(--color-ember-orange); font-weight: 700; }
-  .card__fam { color: var(--color-ash); }
-
-  .card__name {
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: clamp(1.1rem, 2.2vw, 1.9rem);
-    line-height: 0.98;
-    letter-spacing: 0.005em;
-    color: var(--color-bone-white);
-    text-transform: uppercase;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-  }
-
-  .card__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-4);
-    margin-top: auto;
-  }
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 8px;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    border: 1px solid var(--color-soot);
-    color: var(--color-ash);
-    max-width: 100%;
-    overflow-wrap: anywhere;
-  }
-  .badge--orange { border-color: var(--color-ember-orange); color: var(--color-ember-orange); }
-  .badge--bone   { border-color: var(--color-chalk-white); color: var(--color-bone-white); }
-
-  /* EMPTY */
-  .empty {
-    display: none;
-    padding: 80px var(--spacing-24);
-    text-align: center;
-    border-bottom: 1px solid var(--color-chalk-white);
-  }
-  .empty__title {
-    font-family: var(--font-display);
-    font-size: clamp(1.8rem, 6vw, 3rem);
-    text-transform: uppercase;
-    color: var(--color-bone-white);
-    line-height: 0.95;
-    margin-bottom: var(--spacing-8);
-  }
-  .empty__title .accent { color: var(--color-ember-orange); }
-  .empty__sub {
-    font-family: var(--font-mono);
-    font-size: var(--text-caption);
-    color: var(--color-ash);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: var(--spacing-20);
-  }
-
-  /* LEGAL */
-  .legal {
-    padding: var(--spacing-24);
-    border-bottom: 1px solid var(--color-chalk-white);
-    display: flex;
-    gap: var(--spacing-12);
-    flex-wrap: wrap;
-  }
-  .legal__mark {
-    flex-shrink: 0;
-    width: 28px; height: 28px;
-    border: 1px solid var(--color-ember-orange);
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-ember-orange);
-    font-size: 12px;
-    font-weight: 700;
-  }
-  .legal > div:last-child { min-width: 0; flex: 1 1 260px; }
-  .legal__title {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-ember-orange);
-    margin-bottom: var(--spacing-8);
-  }
-  .legal__body {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    line-height: 1.65;
-    color: var(--color-ash);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    overflow-wrap: anywhere;
-  }
-
-  /* FOOTER */
-  .footer {
-    padding: var(--spacing-24);
-    font-family: var(--font-mono);
-    font-size: var(--text-caption);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-ash);
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: var(--spacing-8);
-  }
-
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: max(24px, env(safe-area-inset-bottom, 24px));
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    background: var(--color-bone-white);
-    color: var(--surface-canvas);
-    padding: 10px 18px;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
-    font-size: var(--text-caption);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    z-index: 200;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    max-width: calc(100vw - 32px);
-    text-align: center;
-  }
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* ═══════════════════════════════════════════════════════════
-     📱 RESPONSIVE — Tablet
-     ═══════════════════════════════════════════════════════════ */
-  @media (max-width: 900px) {
-    :root {
-      --ticker-height: 24px;
-      --sidebar-width: 100%;
-    }
-
-    /* iOS: 16px min font prevents auto-zoom on focus */
-    input, select, textarea {
-      font-size: 16px !important;
-    }
-
-    .ticker__track {
-      font-size: 10px;
-      animation-duration: 26s;
-    }
-
-    .sidebar {
-      position: relative;
-      top: 0;
-      margin-top: var(--ticker-height);
-      width: 100%;
-      max-width: 100%;
-      border-right: none;
-      border-bottom: 1px solid var(--color-chalk-white);
-      flex-direction: column;
-      padding: var(--spacing-20);
-      max-height: none;
-      overflow: visible;
-      overscroll-behavior: auto;
-    }
-
-    .sb-tags {
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
-    .sb-tags .tag {
-      width: auto;
-      flex: 0 1 auto;
-    }
-
-    .sb-actions {
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
-    .sb-actions .btn { flex: 1 1 auto; }
-
-    .search-input { height: 44px; padding: 0 40px 0 14px; }
-    .select { height: 44px; }
-    .sort-wrap .select { height: 40px; }
-
-    .main {
-      margin-left: 0;
-      margin-top: 0;
-      max-width: 100%;
-    }
-
-    .hero { padding: var(--spacing-24) var(--spacing-20); }
-    .hero h1 { font-size: clamp(2.25rem, 13vw, 5rem); }
-
-    .counter-strip,
-    .chips { padding-left: var(--spacing-20); padding-right: var(--spacing-20); }
-
-    .legal { padding: var(--spacing-20); }
-  }
-
-  @media (max-width: 640px) {
-    .hero__meta {
-      font-size: 10px;
-      gap: 8px;
-    }
-
-    .counter-strip {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--spacing-8);
-    }
-    .sort-wrap {
-      width: 100%;
-      justify-content: space-between;
-    }
-    .sort-wrap .select {
-      flex: 1;
-      max-width: 220px;
-    }
-
-    .card {
-      padding: var(--spacing-20);
-      min-height: 150px;
-    }
-
-    .footer { padding: var(--spacing-20); }
-
-    .legal__mark { width: 24px; height: 24px; font-size: 11px; }
-    .legal__body { font-size: 10px; }
-  }
-
-  @media (max-width: 400px) {
-    .logo { font-size: 20px; }
-    .sb-actions { flex-direction: column; }
-    .sb-actions .btn { width: 100%; }
-    .hero h1 { font-size: clamp(2rem, 12vw, 3rem); }
-  }
-
-  /* Landscape phones */
-  @media (max-height: 500px) and (orientation: landscape) {
-    .sidebar { max-height: 100vh; overflow-y: auto; }
-  }
-
-  /* Prefer reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .ticker__track { animation: none; }
-    html { scroll-behavior: auto; }
+  @media (prefers-reduced-motion:reduce){
+    .ticker__track{animation:none}
+    html{scroll-behavior:auto}
   }
 </style>
 </head>
 <body>
 
-  <!-- TICKER -->
   <div class="ticker" aria-hidden="true">
     <div class="ticker__track">
-      <span>AION PERFUMERÍA</span>
-      <span>CATÁLOGO 2026</span>
-      <span>FRAGANCIAS INSPIRADAS</span>
-      <span>FILTRADO INTELIGENTE</span>
-      <span>EXPORT PDF DISPONIBLE</span>
-      <span>COPY TO CLIPBOARD</span>
-      <span>AION PERFUMERÍA</span>
-      <span>CATÁLOGO 2026</span>
-      <span>FRAGANCIAS INSPIRADAS</span>
-      <span>FILTRADO INTELIGENTE</span>
-      <span>EXPORT PDF DISPONIBLE</span>
-      <span>COPY TO CLIPBOARD</span>
+      <span>AION PERFUMERÍA</span><span>CATÁLOGO COMPLETO</span><span>FRAGANCIAS INSPIRADAS</span>
+      <span>FILTRADO INTELIGENTE</span><span>EXPORT PDF DISPONIBLE</span><span>COPY TO CLIPBOARD</span>
+      <span>AION PERFUMERÍA</span><span>CATÁLOGO COMPLETO</span><span>FRAGANCIAS INSPIRADAS</span>
+      <span>FILTRADO INTELIGENTE</span><span>EXPORT PDF DISPONIBLE</span><span>COPY TO CLIPBOARD</span>
     </div>
   </div>
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
-
     <div class="logo">Aion<br>Perf.</div>
 
     <div class="sb-group">
       <div class="sb-label">Búsqueda</div>
       <div class="search-box">
-        <input id="search" class="search-input" type="search" autocomplete="off"
-               inputmode="search" enterkeyhint="search"
-               placeholder="Yara, Dior, Árabe…"
-               oninput="onSearch()"
-               onkeydown="if(event.key==='Escape'){clearSearch()}">
+        <input id="search" class="search-input" type="search" autocomplete="off" inputmode="search" enterkeyhint="search" placeholder="Yara, Dior, Árabe…" oninput="onSearch()" onkeydown="if(event.key==='Escape'){clearSearch()}">
         <button class="clear-search" id="clearSearchBtn" onclick="clearSearch()" aria-label="Limpiar">×</button>
       </div>
     </div>
@@ -827,9 +193,9 @@
     </div>
 
     <div class="sb-group">
-      <div class="sb-label">Diseñador</div>
-      <select id="designer" class="select" onchange="render()" aria-label="Filtrar por diseñador"></select>
-      <div id="designerCount" style="font-family:var(--font-mono);font-size:10px;color:var(--color-ash);margin-top:6px;text-transform:uppercase;letter-spacing:0.04em"></div>
+      <div class="sb-label">Casa / Marca</div>
+      <select id="designer" class="select" onchange="render()" aria-label="Filtrar por marca"></select>
+      <div id="designerCount" style="font-family:var(--font-mono);font-size:10px;color:var(--color-ash);margin-top:6px;text-transform:uppercase;letter-spacing:.04em"></div>
     </div>
 
     <div class="sb-actions">
@@ -841,25 +207,18 @@
       <span>© 2026 // AION</span>
       <a onclick="resetAll();return false">→ Reset filtros</a>
     </div>
-
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
-
     <section class="hero">
       <div class="hero__meta">
         <span class="meta-item"><span class="dot"></span> AION / CATÁLOGO</span>
         <span class="meta-item"><span id="totalCount">0</span> ESENCIAS · DISPONIBLES</span>
-        <span class="meta-item">2026 · V.1.0</span>
+        <span class="meta-item">2026 · V.2.0</span>
       </div>
-      <h1>
-        Aion<br>
-        Perfumería<span class="accent">.</span>
-      </h1>
+      <h1>Aion<br>Perfumería<span class="accent">.</span></h1>
       <p class="hero__copy">
-        Catálogo de fragancias inspiradas en diseñadores. Filtra por segmento, familia
-        olfativa o casa; exporta la selección a PDF o cópiala al portapapeles.
+        Catálogo de fragancias inspiradas en diseñadores. Filtra por segmento, familia olfativa o casa; exporta la selección a PDF o cópiala al portapapeles.
       </p>
     </section>
 
@@ -871,13 +230,12 @@
           <option value="catalog">Catálogo</option>
           <option value="az">A–Z</option>
           <option value="za">Z–A</option>
-          <option value="designer">Diseñador</option>
+          <option value="designer">Marca</option>
         </select>
       </div>
     </div>
 
     <div id="activeChips" class="chips" style="display:none"></div>
-
     <div id="grid" class="grid" aria-live="polite"></div>
 
     <div id="empty" class="empty">
@@ -900,102 +258,1438 @@
       <span>// FIN DEL CATÁLOGO</span>
       <span>FRAGANCIAS INSPIRADAS · 2026</span>
     </footer>
-
   </main>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
-/* DATA */
-const perfumes = [
-  {completo:"Good Girl - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Black Opium - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Cloud - Ariana Grande", disenador:"Ariana Grande", segmento:"Mujer", familia:"Dulce"},
-  {completo:"J'adore - Dior", disenador:"Dior", segmento:"Mujer", familia:"Floral"},
-  {completo:"My Way - Giorgio Armani", disenador:"Giorgio Armani", segmento:"Mujer", familia:"Floral"},
-  {completo:"Be Delicious - DKNY", disenador:"DKNY", segmento:"Mujer", familia:"Fresco"},
-  {completo:"Daisy - Marc Jacobs", disenador:"Marc Jacobs", segmento:"Mujer", familia:"Fresco"},
-  {completo:"La Vie Est Belle - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Dulce"},
-  {completo:"212 - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Fresco"},
-  {completo:"Burberry Her - Burberry", disenador:"Burberry", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Light Blue - Dolce & Gabbana", disenador:"Dolce & Gabbana", segmento:"Mujer", familia:"Fresco"},
-  {completo:"Meow - Katy Perry", disenador:"Katy Perry", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Scandal - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Olympéa - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Chance - Chanel", disenador:"Chanel", segmento:"Mujer", familia:"Floral"},
-  {completo:"Fantasy - Britney Spears", disenador:"Britney Spears", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Pure XS - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Halloween - Halloween", disenador:"Halloween", segmento:"Mujer", familia:"Floral"},
-  {completo:"Yara - Lattafa", disenador:"Lattafa", segmento:"Mujer", familia:"Árabe"},
-  {completo:"Born in Roma - Valentino", disenador:"Valentino", segmento:"Mujer", familia:"Dulce"},
-  {completo:"La Belle - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Eilish - Billie Eilish", disenador:"Billie Eilish", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Crystal Noir - Versace", disenador:"Versace", segmento:"Mujer", familia:"Amaderado"},
-  {completo:"212 VIP Rosé - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Paris - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Mujer", familia:"Floral"},
-  {completo:"Sauvage - Dior", disenador:"Dior", segmento:"Hombre", familia:"Fresco"},
-  {completo:"Invictus - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"Acqua di Giò - Giorgio Armani", disenador:"Giorgio Armani", segmento:"Hombre", familia:"Fresco"},
-  {completo:"One Million - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Dulce"},
-  {completo:"Bleu de Chanel - Chanel", disenador:"Chanel", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"Le Male - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Hombre", familia:"Dulce"},
-  {completo:"Aventus - Creed", disenador:"Creed", segmento:"Hombre", familia:"Nicho"},
-  {completo:"Polo Blue - Ralph Lauren", disenador:"Ralph Lauren", segmento:"Hombre", familia:"Fresco"},
-  {completo:"One Million Lucky - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"Eros - Versace", disenador:"Versace", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"Eternity - Calvin Klein", disenador:"Calvin Klein", segmento:"Hombre", familia:"Fresco"},
-  {completo:"Allure Homme Sport - Chanel", disenador:"Chanel", segmento:"Hombre", familia:"Fresco"},
-  {completo:"212 VIP Black - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"Y - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"Bad Boy - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"Stronger With You - Emporio Armani", disenador:"Emporio Armani", segmento:"Hombre", familia:"Dulce"},
-  {completo:"Le Beau - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Hombre", familia:"Dulce"},
-  {completo:"Layton - Parfums de Marly", disenador:"Parfums de Marly", segmento:"Unisex", familia:"Nicho"},
-  {completo:"Club de Nuit Intense Man - Armaf", disenador:"Armaf", segmento:"Hombre", familia:"Árabe"},
-  {completo:"Spicebomb - Viktor & Rolf", disenador:"Viktor & Rolf", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"Phantom - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"Dylan Blue - Versace", disenador:"Versace", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"Boss Bottled - Hugo Boss", disenador:"Hugo Boss", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"L'Immensité - Louis Vuitton", disenador:"Louis Vuitton", segmento:"Hombre", familia:"Nicho"},
-  {completo:"Imagination - Louis Vuitton", disenador:"Louis Vuitton", segmento:"Hombre", familia:"Nicho"},
-  {completo:"Sauvage Elixir - Dior", disenador:"Dior", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"Tobacco Vanille - Tom Ford", disenador:"Tom Ford", segmento:"Unisex", familia:"Nicho"},
-  {completo:"Ombre Leather - Tom Ford", disenador:"Tom Ford", segmento:"Unisex", familia:"Nicho"},
-  {completo:"Toy Boy - Moschino", disenador:"Moschino", segmento:"Hombre", familia:"Amaderado"},
-  {completo:"La Vie est Belle L'Elixir - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Dulce"},
-  {completo:"La Belle Flower Edition - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Floral"},
-  {completo:"Flora Gorgeous Gardenia - Gucci", disenador:"Gucci", segmento:"Mujer", familia:"Floral"},
-  {completo:"Good Girl La Bomba - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Very Good Girl Elixir - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Khamrah - Lattafa", disenador:"Lattafa", segmento:"Unisex", familia:"Árabe"},
-  {completo:"Nebras - Lattafa", disenador:"Lattafa", segmento:"Mujer", familia:"Árabe"},
-  {completo:"Yara Tous - Lattafa", disenador:"Lattafa", segmento:"Mujer", familia:"Árabe"},
-  {completo:"Paradoxe Intense - Prada", disenador:"Prada", segmento:"Mujer", familia:"Floral"},
-  {completo:"Goddess Intense - Burberry", disenador:"Burberry", segmento:"Mujer", familia:"Amaderado"},
-  {completo:"Goddess - Burberry", disenador:"Burberry", segmento:"Mujer", familia:"Amaderado"},
-  {completo:"Hypnotic Poison - Dior", disenador:"Dior", segmento:"Mujer", familia:"Dulce"},
-  {completo:"La Nuit Trésor - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Idôle - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Floral"},
-  {completo:"Thank U, Next - Ariana Grande", disenador:"Ariana Grande", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Ari - Ariana Grande", disenador:"Ariana Grande", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Libre L'Absolu Platine - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Mujer", familia:"Amaderado"},
-  {completo:"Devotion - Dolce & Gabbana", disenador:"Dolce & Gabbana", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Fame Parfum - Paco Rabanne", disenador:"Paco Rabanne", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Miss Dior Absolutely Blooming - Dior", disenador:"Dior", segmento:"Mujer", familia:"Floral"},
-  {completo:"Gaultier Divine - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Floral"},
-  {completo:"Daisy Wild - Marc Jacobs", disenador:"Marc Jacobs", segmento:"Mujer", familia:"Fresco"},
-  {completo:"Solo Ella - Loewe", disenador:"Loewe", segmento:"Mujer", familia:"Floral"},
-  {completo:"Scandal Gold - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Scandal Absolu - Jean Paul Gaultier", disenador:"Jean Paul Gaultier", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Chance Eau Splendide - Chanel", disenador:"Chanel", segmento:"Mujer", familia:"Floral"},
-  {completo:"LoveMe The Emerald Elixir - Tous", disenador:"Tous", segmento:"Mujer", familia:"Dulce"},
-  {completo:"Idôle Now - Lancôme", disenador:"Lancôme", segmento:"Mujer", familia:"Floral"},
-  {completo:"Baccarat Rouge 540 - Maison Francis Kurkdjian", disenador:"Maison Francis Kurkdjian", segmento:"Unisex", familia:"Nicho"},
-  {completo:"Santal 33 - Le Labo", disenador:"Le Labo", segmento:"Unisex", familia:"Nicho"},
-  {completo:"Oud Wood - Tom Ford", disenador:"Tom Ford", segmento:"Unisex", familia:"Nicho"},
-  {completo:"Erba Pura - Xerjoff", disenador:"Xerjoff", segmento:"Unisex", familia:"Nicho"}
-];
+/* ═══════════════════════════════════════════════════════════
+   📦 DATOS DEL CATÁLOGO — formato: CODIGO|NOMBRE|MARCA|FAMILIA
+   El código NUNCA se muestra al usuario (sólo sirve para derivar el segmento).
+   ═══════════════════════════════════════════════════════════ */
+const RAW = `
+D0302NA|9AM POUR FEMME DE AFNAN|AFNAN|Oriental
+C0208NA|9PM DE AFNAN|AFNAN|Ámbar Vainilla
+C0271NA|9PM ELIXIR BY AFNAN|AFNAN|Oriental Especiada
+C0273NA|9PM NIGHT OUT DE AFNAN|AFNAN|Oriental Especiada
+U0151NA|9PM REBEL DE AFNAN|AFNAN|Aromática Frutal
+C0201N|ABSOLU AVENTUS DE CREED|CREED|Amaderada Aromática
+U0002N|ACQUA DI PARMA COLONIA DE ACQUA DI PARMA|ACQUA DI PARMA|Cítrica
+U0003N|AFTERNOON SWIM DE LOUIS VUITTON|LOUIS VUITTON|Cítrica
+C0197N|ALTHAIR DE PARFUMS DE MARLY|PARFUMS DE MARLY|Ámbar Vainilla
+U0072N|ALEXANDRIA II DE XERJOFF|XERJOFF|Ámbar Amaderada
+U0115N|AMBERFUL DE MANCERA|MANCERA|Oriental
+U0142N|AMBER INTRIGUE DE TOM FORD|TOM FORD|Oriental Especiada
+U0057NA|AMBER OUD GOLD EDITION DE AL HARAMAIN|AL HARAMAIN|Ámbar Vainilla
+U0004NA|AMBER OUD ROUGE DE AL HARAMAIN|AL HARAMAIN|Ámbar Floral
+U0088NA|AMBER ROUGE DE ORIENTICA|ORIENTICA|Amaderada Especiada
+U0116N|AMORE CAFFE DE MANCERA|MANCERA|Gourmand Especiado
+U0005N|ANDROMEDA DE TIZIANA TERENZI|TIZIANA TERENZI|Ámbar Floral
+U0006NA|ANGELS SHARE DE KILIAN|KILIAN|Ámbar Vainilla
+U0143NA|ANGELS SHARE PARADIS DE BY KILIAN|KILIAN|Floral Frutal Gourmand
+U0077N|ANI DE NISHANE|NISHANE|Ámbar Floral
+U0084NA|ANIMALIQUE DE BYREDO|BYREDO|Ámbar Floral
+U0007N|ANOTHER 13 DE LE LABO|LE LABO|Ámbar Amaderada
+D0229N|APOGEE DE LOUIS VUITTON|LOUIS VUITTON|Floral
+U0121NA|APPLE BRANDY ON THE ROCKS DE KILIAN|KILIAN|Aromática Frutal
+U0008N|APRES LA MOUR 4 DE THOMAS KOSMALA|THOMAS KOSMALA|Amaderada Aromática
+U0094N|APRES L'AMOUR ELIXIR DE PARFUM DE THOMAS KOSMALA|THOMAS KOSMALA|Ámbar Amaderada
+U0055N|AQUA MEDIA COLOGNE FORTE DE MAISON FRANCIS KURKDJIAN|MAISON FRANCIS KURKDJIAN|Aromática Fougère
+C0269NA|ASAD BOURBON DE LATTAFA PERFUMES|LATTAFA PERFUMES|Oriental Especiada
+C0263NA|ASAD DE LATTAFA PERFUMES|LATTAFA PERFUMES|Oriental
+C0267NA|ASAD ELIXIR DE LATTAFA PERFUMES|LATTAFA PERFUMES|Oriental
+U0119NA|ASATEER DE NABEEL|NABEEL|Oriental Floral
+D0251N|ATTRAPE REVES DE LOUIS VUITTON|LOUIS VUITTON|Ámbar Floral
+C0036N|AVENTUS COLOGNE DE CREED|CREED|Aromática Frutal
+D0026N|AVENTUS FOR HER DE CREED|CREED|Chipre Frutal
+C0037N|AVENTUS FOR HIM DE CREED|CREED|Chipre Frutal
+U0010N|BACCARAT ROUGE 540 DE MAISON FRANCIS KURKDJIAN|MAISON FRANCIS KURKDJIAN|Ámbar Floral
+U0073N|BACCARAT ROUGE 540 EXTRAIT DE PARFUM DE MAISON FRANCIS KURKDJIAN|MAISON FRANCIS KURKDJIAN|Ámbar Floral
+U0110NA|BADE'E AL OUD AMETHYST DE LATTAFA PERFUMES|LATTAFA PERFUMES|Ámbar Vainilla
+U0111NA|BADE'E AL OUD HONOR & GLORY DE LATTAFA PERFUMES|LATTAFA PERFUMES|Frutal
+U0125NA|BADE'E AL OUD OUD FOR GLORY DE LATTAFA PERFUMES|LATTAFA PERFUMES|Oriental Amaderada
+U0095N|BAIE 19 DE LE LABO|LE LABO|Aromática Verde
+U0135N|BAKE DE AKRO|AKRO|Oriental Vainilla
+U0011N|BARAONDA DE NASOMATTO|NASOMATTO|Ámbar Floral
+U0012N|BERGAMOTE 22 DE LE LABO|LE LABO|Amaderada Aromática
+U0107N|BIANCO LATTE DE GIARDINI DI TOSCANA|GIARDINI DI TOSCANA|Ámbar Vainilla
+U0013N|BITTER PEACH DE TOM FORD|TOM FORD|Ámbar Vainilla
+U0014N|BLACK AFGANO DE NASOMATTO|NASOMATTO|Amaderada Aromática
+U0015N|BLACK ORCHID DE TOM FORD|TOM FORD|Ámbar Floral
+U0016NA|BLACK PHANTOM DE KILIAN|KILIAN|Ámbar Vainilla
+U0071NA|BLANCHE DE BYREDO|BYREDO|Floral Aldehídica
+U0114N|BLEECKER STREET DE BOND No. 9|BOND No. 9|Ámbar Amaderada
+U0053NA|BLUE MOON GINGER DASH DE KILIAN|KILIAN|Aromática Fougère
+U0104N|BLUE TALISMAN DE EX NIHILO|EX NIHILO|Ámbar Amaderada
+U0152NA|BON BON DE ARMAF|ARMAF|Floral Frutal Gourmand
+U0017N|BY THE FIREPLACE DE MAISON MARTIN MARGIELA|MAISON MARTIN MARGIELA|Amaderada
+U0079N|CAFE ROSE DE TOM FORD|TOM FORD|Chipre Floral
+U0018N|CALIFORNIA DREAM DE LOUIS VUITTON|LOUIS VUITTON|Cítrica
+U0090N|CANDY EAU DE PARFUM DE THOMAS KOSMALA|THOMAS KOSMALA|Floral Frutal Gourmand
+D0040NA|CANT STOP LOVING YOU DE KILIAN|KILIAN|Ámbar Vainilla
+U0105N|CAPPADOCIA DE MEMO PARIS|MEMO PARIS|Ámbar Especiada
+D0218N|CARMINA DE CREED|CREED|Almizcle Floral
+D0244N|CASSILI DE PARFUMS DE MARLY|PARFUMS DE MARLY|Amaderado
+U0019N|CEDRAT BOISE DE MANCERA|MANCERA|Ámbar Floral
+U0140N|CENTAURUS DE CREED|CREED|Cítrica Aromática
+U0122N|CHANDIGARH EXPRESS DE EX NIHILO|EX NIHILO|Oriental Especiada
+D0228N|CHANGING CONSTANCE DE PENHALIGONS|PENHALIGONS|Oriental Amaderada
+U0020N|CHERRY SMOKE DE TOM FORD|TOM FORD|Ámbar Vainilla
+U0021N|CHIMAERA DE TIZIANA TERENZI|TIZIANA TERENZI|Ámbar Especiada
+U0022N|CITY OF STARS DE LOUIS VUITTON|LOUIS VUITTON|Ámbar Especiada
+C0268NA|CLUB DE NUIT BLING DE ARMAF|ARMAF|Floral
+C0063NA|CLUB DE NUIT INTENSE MAN DE ARMAF|ARMAF|Amaderada Aromática
+D0252NA|CLUB DE NUIT INTENSE WOMAN PERFUME OIL DE ARMAF|ARMAF|Amaderada Especiada
+C0246NA|CLUB DE NUIT URBAN ELIXIR DE ARMAF|ARMAF|Chipre Floral
+U0145N|CORIANDRE 39 MEXICO DE LE LABO|LE LABO|Amaderada
+U0074N|COSTA AZZURRA PARFUM DE TOM FORD|TOM FORD|Floral Acuática
+D0210NA|DAHAB DE KAJAL|KAJAL|Aromática Fougère
+D0058N|DELINA DE PARFUMS DE MARLY|PARFUMS DE MARLY|Chipre Frutal
+D0237N|DELINA EXCLUSIF DE PARFUMS DE MARLY|PARFUMS DE MARLY|Floral
+D0206N|DELINA LA ROSEE DE PARFUMS DE MARLY|PARFUMS DE MARLY|Ámbar
+U0001N|EBENE FUME DE TOM FORD|TOM FORD|Floral Frutal
+U0064NA|EDEN JUICY APPLE 01 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Ámbar Amaderada
+D0234NA|EDEN SPARKLING LYCHEE 39 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Floral Frutal Gourmand
+U0051N|ELECTRIC CHERRY DE TOM FORD|TOM FORD|Floral Frutal
+U0025N|ERBA PURA DE XERJOFF|XERJOFF|Ámbar
+U0070NA|EYES CLOSED DE BYREDO|BYREDO|Almizcle Floral
+U0100NA|FIEVRE VERTE DE KILIAN|KILIAN|Amaderado
+D0286NA|FLEUR MAJESTY ROSE ROYALE 31 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Amaderada Aromática
+U0108N|FLEUR NARCOTIQUE DE EX NIHILO|EX NIHILO|Floral Frutal
+U0153N|FUCKING FABULOUS DE TOM FORD|TOM FORD|Cuero
+U0138N|GOD OF FIRE DE STEPHANE HUMBERT LUCAS 777|STÉPHANE HUMBERT LUCAS 777|Oriental Amaderada
+U0101N|GREENLEY DE PARFUMS DE MARLY|PARFUMS DE MARLY|Cítrica Aromática
+C0092N|GREY VETIVER DE TOM FORD|TOM FORD|Amaderada Especiada
+C0216N|GREY VETIVER PARFUM DE TOM FORD|TOM FORD|Amaderada Especiada
+U0076N|GRIS CHARNEL DE BDK PARFUMS|BDK PARFUMS|Ámbar Especiada
+DU0003|GUELAGUETZA DE RUBI PERFUMERIA|RUBI PERFUMERIA|Creación
+U0069NA|GYPSY WATER DE BYREDO|BYREDO|Amaderada Aromática
+U0026N|HACIVAT DE NISHANE|NISHANE|Chipre
+C0213NA|HAWAS DE RASASI|RASASI|Aromática Acuática
+D0226NA|HAREEM AL SULTAN GOLD DE KHADLAJ PERFUMES|KHADLAJ PERFUMES|Floral
+D0275NA|HAYA DE LATTAFA PERFUMES|LATTAFA PERFUMES|Floral
+U0050NA|HAYATI DE ATTAR COLLECTION|ATTAR COLLECTION|Floral Frutal
+U0102N|HIGH FREQUENCY DE INITIO PARFUMS PRIVES|INITIO PARFUMS PRIVES|Floral
+C0220N|HIMALAYA DE CREED|CREED|Ámbar Amaderada
+U0067N|HUNDRED SILENT WAYS DE NISHANE|NISHANE|Ámbar Floral
+C0191N|IMAGINATION DE LOUIS VUITTON|LOUIS VUITTON|Cítrica Aromática
+U0096NA|INTOXICATED DE KILIAN|KILIAN|Ámbar Especiada
+U0029NA|INVITE ONLY AMBER 23 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Ámbar Especiada
+D0298NA|ISLAND BLISS DE ARMAF|ARMAF|Floral Frutal Gourmand
+U0133N|ITALICA DE XERJOFF|XERJOFF|Oriental Amaderada
+D0253N|JASMIN ROUGE DE TOM FORD|TOM FORD|Ámbar Floral
+C0244N|JAZZ CLUB DE MAISON MARTIN MARGIELA|MAISON MARTIN MARGIELA|Cuero
+U0106N|KALAN DE PARFUMS DE MARLY|PARFUMS DE MARLY|Ámbar Especiada
+U0126NA|KHAMRAH DE LATTAFA PERFUMES|LATTAFA PERFUMES|Aromática Especiada
+C0110NA|KING DE BHARARA|BHARARA|Aromática
+U0129N|KIRKE DE TIZIANA TERENZI|TIZIANA TERENZI|Chipre Frutal
+U0059N|LAFAYETTE STREET DE BOND No. 9|BOND No. 9|Ámbar Fougère
+U0113NA|LAIL MALEKI DE LATTAFA PERFUMES|LATTAFA PERFUMES|Ámbar
+D0196N|LALIBELA DE MEMO PARIS|MEMO PARIS|Chipre Floral
+U0103NA|LAMAR DE KAJAL|KAJAL|Ámbar Floral
+U0068N|LAUDANO NERO DE TIZIANA TERENZI|TIZIANA TERENZI|Ámbar Amaderada
+U0093N|LAVANDE 31 DE LE LABO|LE LABO|Aromática Fougère
+U0030N|LAYTON DE PARFUMS DE MARLY|PARFUMS DE MARLY|Ámbar Floral
+C0113N|L'IMMENSITE DE LOUIS VUITTON|LOUIS VUITTON|Ámbar Especiada
+D0113N|LIPSTICK ON DE MAISON MARTIN MARGIELA|MAISON MARTIN MARGIELA|Floral
+D0263N|LIPSTICK ROSE DE FREDERIC MALLE|FREDERIC MALLE|Floral
+U0031N|LOST CHERRY DE TOM FORD|TOM FORD|Ámbar Floral
+D0116NA|LOVE DONT BE SHY DE KILIAN|KILIAN|Ámbar
+U0066NA|LOVEFEST BURNING CHERRY 48 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Ámbar Amaderada
+U0128N|LYS MEDITERRANEE DE FREDERIC MALLE|FREDERIC MALLE|Floral
+D0300NA|MAUI IN A BOTTLE SWEET BANANA 37 EDP DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Floral Frutal
+U0120N|MANDARINO DI AMALFI DE TOM FORD|TOM FORD|Cítrica Aromática
+D0276NA|MAYAR DE LATTAFA PERFUMES|LATTAFA PERFUMES|Floral Frutal
+U0081N|MEGAMARE DE ORTO PARISI|ORTO PARISI|Aromática Acuática
+C0228N|METEORE DE LOUIS VUITTON|LOUIS VUITTON|Cítrica Aromática
+U0032N|MILLESIME IMPERIAL DE CREED|CREED|Almizcle Amaderado Floral
+U0134N|MILK DE COMMODITY|COMMODITY|Oriental Amaderada
+D0268N|MIU MIU DE MIU MIU|MIU MIU|Floral
+D0267N|MIU MIU L'EAU BLEUE DE MIU MIU|MIU MIU|Floral
+D0269N|MIU MIU L'EAU ROSEE DE MIU MIU|MIU MIU|Floral
+U0033N|MOLECULE 01 DE ESCENTRIC MOLECULES|ESCENTRIC MOLECULES|Almizcle Amaderado
+U0034NA|MUSK KASHMIR DE ATTAR COLLECTION|ATTAR COLLECTION|Floral
+U0082N|MYRRHE MYSTERE DE TOM FORD|TOM FORD|Almizcle Floral
+U0117N|NARCOTIC DELIGHT DE INITIO PARFUMS PRIVES|INITIO PARFUMS PRIVES|Amaderado
+U0112NA|NEBRAS DE LATTAFA PERFUMES|LATTAFA PERFUMES|Ámbar Amaderada
+D0283NA|NICHE FEMME DE BHARARA|BHARARA|Oriental Vainilla
+U0130N|NOMAD DE BOND No. 9|BOND No. 9|Ámbar Vainilla
+D0133N|NOIR POUR FEMME DE TOM FORD|TOM FORD|Floral
+U0078N|NOIR DE NOIR DE TOM FORD|TOM FORD|Oriental Floral
+U0150NA|ODYSSEY DUBAI CHOCOLAT DE ARMAF|ARMAF|Oriental Vainilla
+C0250NA|ODYSSEY MANDARIN SKY DE ARMAF|ARMAF|Cítrica
+U0131NA|OLD FASHIONED DE KILIAN|KILIAN|Oriental Fougère
+U0035N|OMBRE LEATHER DE TOM FORD|TOM FORD|Cuero
+U0075N|OMBRE LEATHER PARFUM DE TOM FORD|TOM FORD|Cuero
+U0036N|OMBRE NOMADE DE LOUIS VUITTON|LOUIS VUITTON|Ámbar Amaderada
+D0235N|ONE & ONLY DE GISSAH PERFUMES|GISSAH PERFUMES|Floral Frutal
+C0140N|OPULENT SHAIK CLASSIC No. 77 DE SHAIK|SHAIK|Ámbar
+D0141N|ORIANA DE PARFUMS DE MARLY|PARFUMS DE MARLY|Floral Frutal Gourmand
+U0098NA|OUDH 36 NUIT DE AL HARAMAIN PERFUMES|AL HARAMAIN|Ámbar
+U0137N|OUD MARACUJA DE MAISON CRIVELLI|MAISON CRIVELLI|Cuero
+U0037NA|OUD SAFFRON DE ORIENTICA|ORIENTICA|Amaderada Especiada
+U0148N|OUD SAPPAROT DE MONTALE|MONTALE|Amaderada Chipre
+U0089N|OUD SATIN MOOD DE MAISON FRANCIS KURKDJIAN|MAISON FRANCIS KURKDJIAN|Ámbar Amaderada
+U0038N|OUD WOOD DE TOM FORD|TOM FORD|Ámbar Amaderada
+U0085NA|OUDGASM VANILLA OUD 36 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Ámbar Amaderada
+U0063N|PACIFIC CHILL DE LOUIS VUITTON|LOUIS VUITTON|Aromática Frutal
+D0265N|PALATINE DE PARFUMS DE MARLY|PARFUMS DE MARLY|Almizcle Amaderado
+C0219N|PERSEUS DE PARFUMS DE MARLY|PARFUMS DE MARLY|Floral
+U0144N|PINK BOA DE STEPHANE HUMBERT LUCAS 777|STÉPHANE HUMBERT LUCAS 777|Amaderada Aromática
+D0262N|PORTRAIT OF A LADY DE FREDERIC MALLE|FREDERIC MALLE|Floral Frutal
+DU0002|PRESTIGE 540 INSPIRADO EN BACCARAT ROUGE|RUBI PERFUMERIA|Línea Diamante
+U0127N|PROMISE DE FREDERIC MALLE|FREDERIC MALLE|Oriental Floral
+D0261N|QUEEN OF SILK DE CREED|CREED|Oriental Floral
+U0039N|RED TOBACCO DE MANCERA|MANCERA|Amaderada Especiada
+C0223N|REFLECTION MAN DE AMOUAGE|AMOUAGE|Almizcle Amaderado
+U0087NA|ROYAL AMBER DE ORIENTICA|ORIENTICA|Floral
+DU0001|ROYAL SANTAL INSPIRADO EN SANTAL 33|RUBI PERFUMERIA|Línea Diamante
+D0279N|SAFANAD DE PARFUMS DE MARLY|PARFUMS DE MARLY|Ámbar Vainilla
+U0118N|SAHARE DE BVLGARI|BVLGARI|Floral
+U0040N|SANTAL 33 DE LE LABO|LE LABO|Amaderada Aromática
+D0260N|SANTAL BLUSH DE TOM FORD|TOM FORD|Oriental Amaderada
+U0041N|SANTAL DE CREED|CREED|Ámbar Amaderada
+U0109N|SEDLEY DE PARFUMS DE MARLY|PARFUMS DE MARLY|Amaderada Aromática
+U0042N|SHERWOOD DE MEMO PARIS|MEMO PARIS|Amaderada
+U0097N|SIDE EFFECT DE INITIO PARFUMS PRIVES|INITIO PARFUMS PRIVES|Ámbar
+U0043N|SILVER MOUNTAIN WATER DE CREED|CREED|Aromática
+U0086NA|SMOKING HOT DE KILIAN|KILIAN|Ámbar Especiada
+U0147N|SPEACHLESS DE LORENZO PAZZAGLIA|LORENZO PAZZAGLIA|Floral Frutal
+U0044N|SPLENDID VANILLA DE ROBERTO CAVALLI|ROBERTO CAVALLI|Ámbar Floral
+D0236N|SPLENDIDA PATCHOULI TENTATION DE BVLGARI|BVLGARI|Chipre Floral
+D0215N|SPRING FLOWER 2023 DE CREED|CREED|Floral Frutal
+U0132N|STERCUS DE ORTO PARISI|ORTO PARISI|Almizcle Amaderado
+C0199N|TERRIBLE TEDDY DE PENHALIGONS|PENHALIGONS|Floral
+U0149N|SUMMER HAMMER DE LORENZO PAZZAGLIA|LORENZO PAZZAGLIA|Cuero
+U0146N|SUN-GRIA DE LORENZO PAZZAGLIA|LORENZO PAZZAGLIA|Frutal
+C0195N|THE BLAZING MR SAM DE PENHALIGONS|PENHALIGONS|Oriental Floral
+U0045N|THE MATCHA 26 DE LE LABO|LE LABO|Amaderada Especiada
+U0065N|THE WORLD ACCORDING TO ARTHUR DE PENHALIGONS|PENHALIGONS|Cítrica Aromática
+D0209N|THIS IS HER DE ZADIG & VOLTAIRE|ZADIG & VOLTAIRE|Ámbar Especiada
+C0198N|THIS IS HIM DE ZADIG & VOLTAIRE|ZADIG & VOLTAIRE|Ámbar Vainilla
+C0205N|THE OMNISCIENT MR THOMPSON DE PENHALIGONS|PENHALIGONS|Ámbar Amaderada
+D0217NA|THE WEDDING SILK SANTAL 36 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Ámbar Floral
+C0204NA|THE WEDDING VELVET SANTAL 35 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Ámbar Floral
+U0136N|TOBACCO HONEY DE GUERLAIN|GUERLAIN|Amaderada
+U0046N|TOBACCO VANILLE DE TOM FORD|TOM FORD|Oriental Amaderada
+U0123N|TOBACOLOR DE DIOR|DIOR|Ámbar Especiada
+U0083N|TORINO 22 DE XERJOFF|XERJOFF|Oriental
+U0047N|TUSCAN LEATHER DE TOM FORD|TOM FORD|Amaderada Aromática
+U0139N|TUXEDO DE YVES SAINT LAURENT|YVES SAINT LAURENT|Chipre
+U0092NA|UTOPIA VANILLA COCO 21 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Ámbar Vainilla
+D0178N|VALAYA DE PARFUMS DE MARLY|PARFUMS DE MARLY|Floral Frutal
+U0062NA|VANILLA 28 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Ámbar Vainilla
+U0124NA|VANILLA CANDY ROCK SUGAR 42 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Floral Frutal Gourmand
+U0048NA|VANILLA ROYALE SUGARED PATCHOULI 64 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Ámbar Vainilla
+U0091N|VANILLA SEX DE TOM FORD|TOM FORD|Ámbar Vainilla
+U0052NA|VANILLE ANTIQUE DE BYREDO|BYREDO|Ámbar Amaderada
+D0227NA|VELVET GOLD DE ORIENTICA|ORIENTICA|Floral
+U0049N|VIRGIN ISLAND WATER DE CREED|CREED|Cítrica
+C0237N|X FOR MEN DE CLIVE CHRISTIAN|CLIVE CHRISTIAN|Oriental Fougère
+U0141N|XJ 1861 NAXOS DE XERJOFF|XERJOFF|Cítrica Gourmand
+D0291NA|YARA CANDY DE LATTAFA PERFUMES|LATTAFA PERFUMES|Floral Frutal
+D0254NA|YARA DE LATTAFA PERFUMES|LATTAFA PERFUMES|Ámbar Vainilla
+D0301NA|YARA ELIXIR DE LATTAFA PERFUMES|LATTAFA PERFUMES|Oriental Vainilla
+D0292NA|YARA MOI DE LATTAFA PERFUMES|LATTAFA PERFUMES|Floral Frutal
+D0255NA|YARA TOUS DE LATTAFA PERFUMES|LATTAFA PERFUMES|Frutal
+D0277NA|YUM BOUJEE MARSHMALLOW 81 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Floral Frutal Gourmand
+U0054NA|YUM PISTACHO GELATO 33 DE KAYALI FRAGRANCES|KAYALI FRAGRANCES|Ámbar
+D0299NA|YUM YUM DE ARMAF|ARMAF|Floral Frutal
+C0001|1 MILLION DE PACO RABANNE|PACO RABANNE|Amaderada Especiada
+C0002|1 MILLION ELIXIR DE PACO RABANNE|PACO RABANNE|Amaderada Aromática
+C0003|1 MILLION INTENSE DE PACO RABANNE|PACO RABANNE|Amaderada Especiada
+C0004|1 MILLION LUCKY DE PACO RABANNE|PACO RABANNE|Amaderada
+C0005|1 MILLION PRIVE DE PACO RABANNE|PACO RABANNE|Amaderada
+C0006|1 MILLION ROYAL DE PACO RABANNE|PACO RABANNE|Ámbar Amaderada
+C0008|212 MEN DE CAROLINA HERRERA|CAROLINA HERRERA|Almizcle Amaderado Floral
+C0010|212 SEXY MEN DE CAROLINA HERRERA|CAROLINA HERRERA|Ámbar Fougère
+C0011|212 VIP BLACK LOVE NY DE CAROLINA HERRERA|CAROLINA HERRERA|Aromática Fougère
+C0012|212 VIP BLACK RED DE CAROLINA HERRERA|CAROLINA HERRERA|Amaderada Especiada
+C0013|212 VIP MEN BLACK DE CAROLINA HERRERA|CAROLINA HERRERA|Aromática Fougère
+C0014|212 VIP MEN CLUB EDITION DE CAROLINA HERRERA|CAROLINA HERRERA|Amaderada Especiada
+C0015|212 VIP MEN DE CAROLINA HERRERA|CAROLINA HERRERA|Ámbar Amaderada
+C0017|212 VIP PARTY FEVER FOR HIM DE CAROLINA HERRERA|CAROLINA HERRERA|Amaderada Especiada
+C0018|360 BLUE DE PERRY ELLIS|PERRY ELLIS|Amaderada Aromática
+C0019|360 DE PERRY ELLIS|PERRY ELLIS|Aromática
+C0020|360 RED DE PERRY ELLIS|PERRY ELLIS|Ámbar Especiada
+C0021|ACQUA DI GIO ABSOLUT DE GIORGIO ARMANI|GIORGIO ARMANI|Amaderada Aromática
+C0023|ACQUA DI GIO DE GIORGIO ARMANI|GIORGIO ARMANI|Aromática Acuática
+C0200|ACQUA DI GIO PARFUM DE GIORGIO ARMANI|GIORGIO ARMANI|Amaderada Acuática
+C0024|ACQUA DI GIO PROFONDO DE GIORGIO ARMANI|GIORGIO ARMANI|Aromática Acuática
+C0233|ACQUA DI GIO PROFONDO PARFUM DE GIORGIO ARMANI|GIORGIO ARMANI|Aromática Fougère
+C0025|ACQUA DI GIO PROFUMO DE GIORGIO ARMANI|GIORGIO ARMANI|Aromática Acuática
+C0027|ALLURE DE CHANEL|CHANEL|Ámbar Amaderada
+C0028|ALLURE HOMME SPORT DE CHANEL|CHANEL|Amaderada Especiada
+C0180|AMERICA DE PERRY ELLIS|PERRY ELLIS|Chipre Frutal
+C0029|ANIMALE FOR MEN DE PARLUX|PARLUX|Chipre
+C0030|ANTAEUS DE CHANEL|CHANEL|Amaderada Chipre
+C0031|ARAMIS DE ARAMIS|ARAMIS|Amaderada Chipre
+C0032|ARMANI CODE (BLACK CODE) DE GIORGIO ARMANI|GIORGIO ARMANI|Amaderada Aromática
+C0033|ARMANI CODE ABSOLU DE GIORGIO ARMANI|GIORGIO ARMANI|Ámbar Especiada
+C0034|ARMANI CODE SPORT DE GIORGIO ARMANI|GIORGIO ARMANI|Cítrica Aromática
+C0035|ARMANI MANIA DE GIORGIO ARMANI|GIORGIO ARMANI|Amaderada Especiada
+C0038|AZZARO DE AZZARO|AZZARO|Aromática Fougère
+C0039|BAD BOY COBALT DE CAROLINA HERRERA|CAROLINA HERRERA|Amaderada Aromática
+C0234|BAD BOY COBALT ELIXIR DE CAROLINA HERRERA|CAROLINA HERRERA|Aromática
+C0040|BAD BOY DE CAROLINA HERRERA|CAROLINA HERRERA|Ámbar Especiada
+C0041|BAD BOY EXTREME DE CAROLINA HERRERA|CAROLINA HERRERA|Ámbar
+C0042|BLACK XS L'APHRODISIAQUE DE PACO RABANNE|PACO RABANNE|Cuero
+C0043|BLEU DE CHANEL|CHANEL|Amaderada Aromática
+C0266|BLEU DE CHANEL L'EXCLUSIF DE CHANEL|CHANEL|Amaderada Aromática
+C0044|BLUE JEANS DE VERSACE|VERSACE|Aromática Fougère
+C0045|BLUE LABEL DE GIVENCHY|GIVENCHY|Amaderada Especiada
+C0046|BOSS 01 DE HUGO BOSS|HUGO BOSS|Aromática Fougère
+C0254|BORN IN ROMA EXTRADOSE UOMO DE VALENTINO|VALENTINO|Aromática Fougère
+C0209|BORN IN ROMA RENDEZ VOUS ROCKSTUD NOIR DE VALENTINO|VALENTINO|Aromática Fougère
+C0248|BORN IN ROMA THE GOLD UOMO DE VALENTINO|VALENTINO|Oriental Amaderada
+C0047|BOSS BOTTLED DE HUGO BOSS|HUGO BOSS|Amaderada Especiada
+C0048|BOSS BOTTLED INFINITE DE HUGO BOSS|HUGO BOSS|Amaderada Aromática
+C0050|BOSS BOTTLED MARINE DE HUGO BOSS|HUGO BOSS|Amaderada Aromática
+C0051|BOSS BOTTLED NIGHT DE HUGO BOSS|HUGO BOSS|Amaderada Aromática
+C0188|BOSS BOTTLED PACIFIC DE HUGO BOSS|HUGO BOSS|Amaderada Aromática
+C0052|BOSS BOTTLED TONIC DE HUGO BOSS|HUGO BOSS|Amaderada Especiada
+C0242|BOSS BOTTLED TRIUMPH ELIXIR DE HUGO BOSS|HUGO BOSS|Ámbar Amaderada
+C0053|BOSS BOTTLED UNLIMITED DE HUGO BOSS|HUGO BOSS|Aromática Fougère
+C0054|BOSS ORANGE FOR MEN DE HUGO BOSS|HUGO BOSS|Amaderada Especiada
+C0055|BOSS THE SCENT DE HUGO BOSS|HUGO BOSS|Aromática Especiada
+C0206|BOSS THE SCENT MAGNETIC DE HUGO BOSS|HUGO BOSS|Ámbar Amaderada
+C0239|BOTTLED ABSOLU DE HUGO BOSS|HUGO BOSS|Amaderada Aromática
+C0056|BURBERRY MEN DE BURBERRY|BURBERRY|Amaderada Aromática
+C0057|BVLGARI MAN IN BLACK DE BVLGARI|BVLGARI|Ámbar Floral
+C0181|BVLGARI MAN RAIN ESSENCE DE BVLGARI|BVLGARI|Amaderada
+C0058|CARLO CORINTO DE CARLO CORINTO|CARLO CORINTO|Amaderada
+C0236|CH BIRDS OF PARADISE FOR HIM DE CAROLINA HERRERA|CAROLINA HERRERA|Aromática Amaderada
+C0059|CH MEN DE CAROLINA HERRERA|CAROLINA HERRERA|Ámbar Especiada
+C0060|CH MEN PRIVE DE CAROLINA HERRERA|CAROLINA HERRERA|Cuero
+C0061|CHROME DE AZZARO|AZZARO|Cítrica Aromática
+U0023|CK ONE DE CALVIN KLEIN|CALVIN KLEIN|Cítrica Aromática
+C0192|CLINIQUE HAPPY DE CLINIQUE|CLINIQUE|Cítrica Aromática
+C0194|COACH NEW YORK DE COACH|COACH|Amaderada Aromática
+C0064|COOL WATER DE DAVIDOFF|DAVIDOFF|Aromática Acuática
+U0058|CUIR NOIR DE GIORGIO ARMANI|GIORGIO ARMANI|Cuero
+C0066|CURVE DE LIZ CLAIBORNE|LIZ CLAIBORNE|Aromática Verde
+U0080|DG VIB3 EAU DE PARFUM DE DOLCE & GABBANA|DOLCE & GABBANA|Ámbar Fougère
+C0067|DIAMONDS DE GIORGIO ARMANI|GIORGIO ARMANI|Amaderada Aromática
+C0255|DIOR HOMME PARFUM 2025 DE DIOR|DIOR|Oriental
+C0068|DKNY BE DELICIOUS MEN DE DONNA KARAN|DONNA KARAN|Amaderada Aromática
+C0069|DOLCE & GABBANA DE DOLCE & GABBANA|DOLCE & GABBANA|Aromática Fougère
+C0070|DOLCE & GABBANA POUR HOMME INTENSO DE DOLCE & GABBANA|DOLCE & GABBANA|Amaderada Aromática
+C0071|DRAKKAR NOIR DE GUY LAROCHE|GUY LAROCHE|Aromática Fougère
+C0182|DYLAN BLUE POUR HOMME DE VERSACE|VERSACE|Aromática Fougère
+C0072|EMPORIO ARMANI LUI DE GIORGIO ARMANI|GIORGIO ARMANI|Amaderada Aromática
+C0074|EROS DE VERSACE|VERSACE|Ámbar Fougère
+C0243|EROS ENERGY DE VERSACE|VERSACE|Cítrica Aromática
+C0075|EROS FLAME DE VERSACE|VERSACE|Amaderada Especiada
+C0258|EROS NAJIM DE VERSACE|VERSACE|Oriental Amaderada
+C0076|ESCAPE FOR MEN DE CALVIN KLEIN|CALVIN KLEIN|Aromática Verde
+C0078|ETERNITY AIR DE CALVIN KLEIN|CALVIN KLEIN|Aromática Fougère
+C0080|ETERNITY DE CALVIN KLEIN|CALVIN KLEIN|Aromática Fougère
+C0189|ETERNITY FOR MEN REFLECTIONS DE CALVIN KLEIN|CALVIN KLEIN|Aromática Fougère
+C0081|EXPLORER DE MONTBLANC|MONTBLANC|Amaderada Aromática
+C0226|EXPLORER PLATINUM DE MONTBLANC|MONTBLANC|Amaderada
+C0082|FAHRENHEIT DE CHRISTIAN DIOR|CHRISTIAN DIOR|Aromática Fougère
+C0084|FERRARI BLACK DE FERRARI|FERRARI|Aromática Fougère
+C0086|FIRST INSTINCT BLUE DE ABERCROMBIE & FITCH|ABERCROMBIE & FITCH|Aromática Fougère
+C0259|FOREVER WANTED ELIXIR DE AZZARO|AZZARO|Cuero
+C0087|FUEL FOR LIFE HOMME DE DIESEL|DIESEL|Aromática Fougère
+C0088|GENTLEMAN (1974) DE GIVENCHY|GIVENCHY|Amaderada Aromática
+C0183|GENTLEMAN EAU DE PARFUM RESERVE PRIVEE DE GIVENCHY|GIVENCHY|Ámbar Vainilla
+C0207|GENTLEMAN SOCIETY DE GIVENCHY|GIVENCHY|Amaderada Aromática
+C0090|GOLD RUSH DE PARIS HILTON|PARIS HILTON|Ámbar Fougère
+C0091|GREY FLANNEL DE GEOFFREY BEENE|GEOFFREY BEENE|Ámbar Amaderada
+C0094|HALLOWEEN DE JESUS DEL POZO|JESUS DEL POZO|Ámbar Amaderada
+C0095|HALLOWEEN MAN X DE JESUS DEL POZO|JESUS DEL POZO|Ámbar Fougère
+C0098|HERRERA FOR MEN DE CAROLINA HERRERA|CAROLINA HERRERA|Almizcle Amaderado
+C0231|HERO PARFUM DE BURBERRY|BURBERRY|Floral
+C0184|HUGO DARK BLUE DE HUGO BOSS|HUGO BOSS|Oriental Amaderada
+C0099|HUGO DE HUGO BOSS|HUGO BOSS|Ámbar Especiada
+C0100|HUGO ENERGISE DE HUGO BOSS|HUGO BOSS|Aromática Verde
+C0245|HUGO INTENSE DE HUGO BOSS|HUGO BOSS|Amaderada Aromática
+C0103|IMPACT DE TOMMY HILFIGER|TOMMY HILFIGER|Oriental Fougère
+C0247|INVICTUS AQUA (2024) DE PACO RABANNE|PACO RABANNE|Aromática Frutal
+C0104|INVICTUS AQUA DE PACO RABANNE|PACO RABANNE|Aromática Acuática
+C0105|INVICTUS DE PACO RABANNE|PACO RABANNE|Amaderada Acuática
+C0230|INVICTUS PARFUM DE PACO RABANNE|PACO RABANNE|Amaderada Acuática
+C0106|INVICTUS PLATINUM DE PACO RABANNE|PACO RABANNE|Aromática Acuática
+C0262|INVICTUS VICTORY ABSOLU DE PACO RABANNE|PACO RABANNE|Amaderada Aromática
+C0107|INVICTUS VICTORY ELIXIR DE PACO RABANNE|PACO RABANNE|Amaderada
+C0108|JOVAN MUSK FOR MEN DE JOVAN|JOVAN|Ámbar Amaderada
+C0235|K EAU DE PARFUM INTENSE DE DOLCE & GABBANA|DOLCE & GABBANA|Almizcle Amaderado
+C0212|L'EAU D'ISSEY DE ISSEY MIYAKE|ISSEY MIYAKE|Floral
+C0112|L'HOMME LIBRE DE YVES SAINT LAURENT|YVES SAINT LAURENT|Cuero
+C0114|L'HOMME ROCHAS DE ROCHAS|ROCHAS|Amaderada Acuática
+C0115|LA NUIT DE L'HOMME DE YVES SAINT LAURENT|YVES SAINT LAURENT|Amaderada Especiada
+C0116|LACOSTE L.12.12 BLANC DE LACOSTE|LACOSTE|Ámbar Fougère
+C0077|LACOSTE ESSENTIAL DE LACOSTE|LACOSTE|Amaderada Especiada
+C0117|LACOSTE L.12.12 MAGNETIC DE LACOSTE|LACOSTE|Amaderada Aromática
+C0118|LACOSTE L.12.12 NOIR DE LACOSTE|LACOSTE|Amaderada Aromática
+C0119|LACOSTE L.12.12 YELLOW (JAUNE) DE LACOSTE|LACOSTE|Aromática Especiada
+C0121|LACOSTE RED DE LACOSTE|LACOSTE|Aromática Fougère
+C0122|LAPIDUS POUR HOMME DE TED LAPIDUS|TED LAPIDUS|Ámbar
+C0123|LE BEAU DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Amaderada Aromática
+C0249|LE BEAU FLOWER EDITION DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Aromática Frutal
+C0211|LE BEAU LE PARFUM DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Ámbar Amaderada
+C0227|LE BEAU PARADISE GARDEN DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Verde Acuático
+C0124|LE MALE DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Amaderado
+C0253|LE MALE ELIXIR ABSOLU DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Ámbar Fougère
+C0185|LE MALE ELIXIR DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Amaderada Aromática
+C0274|LE MALE IN BLUE DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Ámbar Fougère
+C0203|LE MALE LE PARFUM DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Aromática
+C0126|LEGEND DE MONTBLANC|MONTBLANC|Ámbar
+C0127|LEGEND NIGHT DE MONTBLANC|MONTBLANC|Cuero
+C0128|LEGEND SPIRIT MONTBLANC|MONTBLANC|Amaderada Aromática
+C0224|L'HOMME DE LACOSTE|LACOSTE|Amaderada Aromática
+C0186|L'HOMME IDEAL PLATINE PRIVE DE GUERLAIN|GUERLAIN|Amaderada Especiada
+C0129|LIGHT BLUE POUR HOMME DE DOLCE & GABBANA|DOLCE & GABBANA|Amaderada
+C0130|LIGHT BLUE POUR HOMME ITALIAN LOVE DE DOLCE & GABBANA|DOLCE & GABBANA|Cítrica Aromática
+C0193|LIGHT BLUE SUMMER VIBES DE DOLCE & GABBANA|DOLCE & GABBANA|Aromática Verde
+C0215|LUNA ROSSA BLACK DE PRADA|PRADA|Amaderada Aromática
+C0131|LUNA ROSSA CARBON DE PRADA|PRADA|Ámbar Amaderada
+C0132|LUNA ROSSA OCEAN DE PRADA|PRADA|Aromática Fougère
+C0241|LUNA ROSSA OCEAN LE PARFUM DE PRADA|PRADA|Aromática Fougère
+C0240|MILLION GOLD DE PACO RABANNE|PACO RABANNE|Aromática Fougère
+C0261|MILLION GOLD ELIXIR DE PACO RABANNE|PACO RABANNE|Amaderada Aromática
+C0133|MINOTAURE DE PALOMA PICASSO|PALOMA PICASSO|Oriental Vainilla
+C0251|MR. BURBERRY DE BURBERRY|BURBERRY|Ámbar
+C0196|MYSLF DE YVES SAINT LAURENT|YVES SAINT LAURENT|Amaderada Aromática
+C0134|NAUTICA COMPETITION DE NAUTICA|NAUTICA|Aromática
+C0135|NAUTICA DE NAUTICA|NAUTICA|Aromática Fougère
+C0136|NAUTICA VOYAGE DE NAUTICA|NAUTICA|Amaderada Chipre
+C0137|OBSESSION DE CALVIN KLEIN|CALVIN KLEIN|Amaderada Acuática
+C0138|OPEN ROAD DE COACH|COACH|Ámbar Amaderada
+C0139|OPIUM DE YVES SAINT LAURENT|YVES SAINT LAURENT|Amaderada Aromática
+C0142|PACO RABANNE DE PACO RABANNE|PACO RABANNE|Aromática Fougère
+C0270|PARADIGME DE PRADA|PRADA|Oriental Fougère
+C0143|PARIS HILTON DE PARIS HILTON|PARIS HILTON|Amaderada Aromática
+C0144|PERRY ELLIS 18 DE PERRY ELLIS|PERRY ELLIS|Aromática Fougère
+C0145|PHANTOM DE PACO RABANNE|PACO RABANNE|Amaderada Aromática
+C0187|PHANTOM PARFUM DE PACO RABANNE|PACO RABANNE|Aromática Fougère
+C0146|PI DE GIVENCHY|GIVENCHY|Ámbar Amaderada
+C0147|PLATINUM EGOISTE DE CHANEL|CHANEL|Almizcle Amaderado Floral
+C0148|PLAY DE GIVENCHY|GIVENCHY|Cítrica Aromática
+C0149|POLO BLACK DE RALPH LAUREN|RALPH LAUREN|Amaderada Aromática
+C0150|POLO BLUE DE RALPH LAUREN|RALPH LAUREN|Aromática Fougère
+C0152|POLO DE RALPH LAUREN|RALPH LAUREN|Amaderada Chipre
+C0153|POLO RED PARFUM DE RALPH LAUREN|RALPH LAUREN|Amaderada Especiada
+C0155|POLO SPORT DE RALPH LAUREN|RALPH LAUREN|Aromática Verde
+C0156|RALPH CLUB DE RALPH LAUREN|RALPH LAUREN|Amaderada Especiada
+C0214|RALPHS CLUB ELIXIR DE RALPH LAUREN|RALPH LAUREN|Ámbar Amaderada
+U0060|SANTAL DAN SHA DE GIORGIO ARMANI|GIORGIO ARMANI|Amaderada
+C0157|SANTOS DE CARTIER|CARTIER|Ámbar Amaderada
+C0158|SAUVAGE DE CHRISTIAN DIOR|CHRISTIAN DIOR|Ámbar Fougère
+C0264|SAUVAGE EAU FORTE DE DIOR|DIOR|Aromática Fougère
+C0159|SAUVAGE ELIXIR DE CHRISTIAN DIOR|CHRISTIAN DIOR|Aromática
+C0238|SCANDAL POUR HOMME ABSOLU DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Amaderada
+C0160|SCANDAL POUR HOMME DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Ámbar Amaderada
+C0257|SCANDAL POUR HOMME INTENSE DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Amaderada Aromática
+C0218|SCANDAL POUR HOMME LE PARFUM DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Ámbar
+C0161|SOLO LOEWE DE LOEWE|LOEWE|Ámbar
+C0162|SPICEBOMB DE VIKTOR & ROLF|VIKTOR & ROLF|Amaderada Especiada
+C0210|SPICEBOMB INFRARED EDP DE VIKTOR & ROLF|VIKTOR & ROLF|Cuero
+C0164|STARWALKER DE MONTBLANC|MONTBLANC|Amaderada Especiada
+C0260|STRONGER WITH YOU ABSOLUTELY DE GIORGIO ARMANI|GIORGIO ARMANI|Oriental Fougère
+C0165|STRONGER WITH YOU DE GIORGIO ARMANI|GIORGIO ARMANI|Aromática Fougère
+U0056|STRONGER WITH YOU AMBER DE GIORGIO ARMANI|GIORGIO ARMANI|Ámbar Fougère
+C0225|STRONGER WITH YOU TOBACCO DE GIORGIO ARMANI|GIORGIO ARMANI|Ámbar Especiada
+C0275|STRONGER WITH YOU POWERFULLY DE GIORGIO ARMANI|GIORGIO ARMANI|Oriental Vainilla
+C0166|SWISS ARMY DE VICTORINOX SWISS ARMY|VICTORINOX|Aromática Fougère
+C0222|TERRE DE HERMES|HERMES|Amaderada Especiada
+C0167|THE DREAMER DE VERSACE|VERSACE|Aromática Fougère
+C0168|THE ONE FOR MEN DE DOLCE & GABBANA|DOLCE & GABBANA|Amaderada Especiada
+C0252|THE MOST WANTED PARFUM DE AZZARO|AZZARO|Amaderada Especiada
+C0169|TOMMY DE TOMMY HILFIGER|TOMMY HILFIGER|Cítrica Aromática
+U0099|TOY 2 PEARL DE MOSCHINO|MOSCHINO|Floral Frutal
+C0170|TOY BOY DE MOSCHINO|MOSCHINO|Amaderada Especiada
+C0217|TYGAR DE BVLGARI|BVLGARI|Cítrica Aromática
+C0171|ULTRA MALE DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Ámbar Fougère
+C0190|UOMO BORN IN ROMA CORAL FANTASY DE VALENTINO|VALENTINO|Amaderada Aromática
+C0173|UOMO? DE MOSCHINO|MOSCHINO|Almizcle Amaderado
+C0221|VALENTINO UOMO BORN IN ROMA DE VALENTINO|VALENTINO|Floral
+C0232|VALENTINO UOMO BORN IN ROMA GREEN STRAVAGANZA DE VALENTINO|VALENTINO|Amaderada Especiada
+C0256|VALENTINO UOMO BORN IN ROMA INTENSE DE VALENTINO|VALENTINO|Ámbar Fougère
+C0265|VALENTINO UOMO BORN IN ROMA IVORY DE VALENTINO|VALENTINO|Oriental Vainilla
+C0272|VALENTINO UOMO BORN IN ROMA PURPLE MELANCHOLIA DE VALENTINO|VALENTINO|Amaderada
+C0174|VALENTINO UOMO DE VALENTINO|VALENTINO|Amaderada Aromática
+C0175|VERSACE MAN EAU DE FRAICHE DE VERSACE|VERSACE|Amaderada Acuática
+C0176|VERSACE POUR HOMME DE VERSACE|VERSACE|Aromática Fougère
+C0177|VETIVER DE GUERLAIN|GUERLAIN|Amaderada Aromática
+C0178|Y EAU DE PARFUM INTENSE DE YVES SAINT LAURENT|YVES SAINT LAURENT|Aromática Fougère
+C0229|Y ELIXIR DE YVES SAINT LAURENT|YVES SAINT LAURENT|Aromática Fougère
+C0179|YVES SAINT LAURENT Y DE YVES SAINT LAURENT|YVES SAINT LAURENT|Amaderada Aromática
+D0001|212 DE CAROLINA HERRERA|CAROLINA HERRERA|Almizcle Floral Amaderado
+D0003|212 SEXY DE CAROLINA HERRERA|CAROLINA HERRERA|Ámbar Floral
+D0004|212 VIP CLUB EDITION DE CAROLINA HERRERA|CAROLINA HERRERA|Floral Frutal
+D0005|212 VIP DE CAROLINA HERRERA|CAROLINA HERRERA|Ámbar Vainilla
+D0006|212 VIP PARTY FEVER DE CAROLINA HERRERA|CAROLINA HERRERA|Floral Frutal
+D0007|212 VIP ROSE DE CAROLINA HERRERA|CAROLINA HERRERA|Floral Frutal
+D0258|212 VIP ROSE ELIXIR DE CAROLINA HERRERA|CAROLINA HERRERA|Chipre Floral
+D0008|212 VIP ROSE EXTRA DE CAROLINA HERRERA|CAROLINA HERRERA|Floral Frutal
+D0009|212 VIP ROSE LOVE NY DE CAROLINA HERRERA|CAROLINA HERRERA|Floral
+D0010|212 VIP ROSE RED DE CAROLINA HERRERA|CAROLINA HERRERA|Floral Frutal
+D0011|360 DE PERRY ELLIS|PERRY ELLIS|Floral
+D0013|5TH AVENUE DE ELIZABETH ARDEN|ELIZABETH ARDEN|Floral
+D0014|A DROP D'ISSEY DE ISSEY MIYAKE|ISSEY MIYAKE|Floral
+D0015|ACQUA DI GIO DE GIORGIO ARMANI|GIORGIO ARMANI|Floral Frutal
+D0016|AIRES DEL TIEMPO DE NINA RICCI|NINA RICCI|Floral
+D0017|ALIEN DE MUGLER|MUGLER|Ámbar Amaderada
+D0018|AMARIGE DE GIVENCHY|GIVENCHY|Floral
+D0019|AMO FERRAGAMO DE SALVATORE FERRAGAMO|SALVATORE FERRAGAMO|Ámbar Floral
+D0020|AMOR AMOR DE CACHAREL|CACHAREL|Floral Frutal
+D0187|AMOR AMOR IN A FLASH DE CACHAREL|CACHAREL|Floral Frutal Gourmand
+D0021|ANAIS ANAIS DE CACHAREL|CACHAREL|Floral
+D0022|ANGE OU DEMON DE GIVENCHY|GIVENCHY|Ámbar Floral
+D0023|ANGEL DE MUGLER|MUGLER|Ámbar Vainilla
+D0188|ANGEL ELIXIR DE MUGLER|MUGLER|Floral Frutal Gourmand
+D0024|ANIMALE DE PARLUX|PARLUX|Chipre
+D0025|ARI DE ARIANA GRANDE|ARIANA GRANDE|Floral Frutal Gourmand
+D0027|BE ENCHANTED DE BATH & BODY WORKS|BATH & BODY WORKS|Floral Frutal
+D0028|BECAUSE IT'S YOU EMPORIO ARMANI DE GIORGIO ARMANI|GIORGIO ARMANI|Floral Frutal
+D0029|BELLA DE NINA RICCI|NINA RICCI|Floral Frutal
+D0030|BLACK OPIUM DE YVES SAINT LAURENT|YVES SAINT LAURENT|Ámbar Vainilla
+D0031|BLACK XS DE PACO RABANNE|PACO RABANNE|Almizcle Floral Amaderado
+D0032|BLACK XS L'APHRODISIAQUE DE PACO RABANNE|PACO RABANNE|Ámbar Floral
+D0033|BONBON DE VIKTOR & ROLF|VIKTOR & ROLF|Floral Frutal Gourmand
+D0287|BORN IN ROMA EXTRADOSE DONNA DE VALENTINO|VALENTINO|Oriental Vainilla
+D0225|BORN IN ROMA RENDEZ VOUS PINK PP DE VALENTINO|VALENTINO|Ámbar Floral
+D0273|BORN IN ROMA THE GOLD DONNA DE VALENTINO|VALENTINO|Floral Frutal Gourmand
+D0221|BOSS THE SCENT MAGNETIC DE HUGO BOSS|HUGO BOSS|Floral Frutal
+D0246|BRAZILIAN CRUSH CHEIROSA 62 DE SOL DE JANEIRO|SOL DE JANEIRO|Vainilla
+D0036|BRIGHT CRYSTAL DE VERSACE|VERSACE|Floral Frutal
+D0238|BRIGHT CRYSTAL ABSOLU DE VERSACE|VERSACE|Floral Frutal
+D0231|BRISA CUBANA DE ESCADA|ESCADA|Floral Frutal
+D0037|BURBERRY FOR HER DE BURBERRY|BURBERRY|Floral Frutal Gourmand
+D0038|BURBERRY HER ELIXIR DE PARFUM DE BURBERRY|BURBERRY|Floral Frutal Gourmand
+D0039|CAN CAN DE PARIS HILTON|PARIS HILTON|Floral Frutal
+D0042|CAROLINA HERRERA DE CAROLINA HERRERA|CAROLINA HERRERA|Floral
+D0043|CH DE CAROLINA HERRERA|CAROLINA HERRERA|Ámbar Floral
+D0197|CH PASION FOR HER DE CAROLINA HERRERA|CAROLINA HERRERA|Ámbar Floral
+D0044|CHANCE DE CHANEL|CHANEL|Chipre Floral
+D0285|CHANCE EAU SPLENDIDE DE CHANEL|CHANEL|Floral Frutal
+D0045|CHANCE EAU VIVE DE CHANEL|CHANEL|Almizcle Floral Amaderado
+D0046|CHANEL 5 DE CHANEL|CHANEL|Floral Aldehídica
+D0247|CHEIROSA 71 DE SOL DE JANEIRO|SOL DE JANEIRO|Ámbar Vainilla
+D0047|CK ONE SHOCK FOR HER DE CALVIN KLEIN|CALVIN KLEIN|Ámbar Especiada
+D0048|CLOUD DE ARIANA GRANDE|ARIANA GRANDE|Floral Frutal Gourmand
+D0223|CLOUD INTENSE DE ARIANA GRANDE|ARIANA GRANDE|Ámbar Vainilla
+D0207|CLOUD PINK DE ARIANA GRANDE|ARIANA GRANDE|Ámbar Vainilla
+D0241|COACH LOVE EAU DE PARFUM DE COACH|COACH|Floral Frutal
+D0049|COACH NEW YORK DE COACH|COACH|Floral
+D0050|COCO DE CHANEL|CHANEL|Ámbar Floral
+D0051|COCO MADEMOISELLE DE CHANEL|CHANEL|Ámbar Floral
+D0052|COCO NOIR DE CHANEL|CHANEL|Ámbar Amaderada
+D0053|COOL WATER DE DAVIDOFF|DAVIDOFF|Floral Acuática
+D0054|COOL WATER REBORN DE DAVIDOFF|DAVIDOFF|Floral Acuática
+D0257|CRYSTAL NOIR PARFUM DE VERSACE|VERSACE|Oriental Floral
+D0199|CRY BABY PERFUME MILK DE MELANIE MARTINEZ|MELANIE MARTINEZ|Ámbar Vainilla
+D0055|DAISY DE MARC JACOBS|MARC JACOBS|Almizcle Floral Amaderado
+D0056|DAISY DREAM DE MARC JACOBS|MARC JACOBS|Floral Frutal
+D0280|DAISY WILD DE MARC JACOBS|MARC JACOBS|Frutal
+D0057|DECADENCE DE MARC JACOBS|MARC JACOBS|Ámbar Floral
+D0214|DEVOTION DE DOLCE & GABBANA|DOLCE & GABBANA|Ámbar Vainilla
+D0274|DEVOTION INTENSE DE DOLCE & GABBANA|DOLCE & GABBANA|Oriental Vainilla
+D0059|DKNY BE DELICIOUS DE DONNA KARAN|DONNA KARAN|Floral Frutal
+D0060|DKNY DE DONNA KARAN|DONNA KARAN|Floral Frutal
+D0061|DOLCE & GABBANA DE DOLCE & GABBANA|DOLCE & GABBANA|Floral
+D0062|DONNA BORN IN ROMA DE VALENTINO|VALENTINO|Ámbar Floral
+D0064|DYLAN BLUE POUR FEMME DE VERSACE|VERSACE|Floral Frutal
+D0211|EILISH DE BILLIE EILISH|BILLIE EILISH|Ámbar Vainilla
+D0067|EROS POUR FEMME DE VERSACE|VERSACE|Floral Amaderado
+D0189|ESCAPE DE CALVIN KLEIN|CALVIN KLEIN|Floral Acuática
+D0068|ETERNITY AIR DE CALVIN KLEIN|CALVIN KLEIN|Floral Frutal
+D0069|ETERNITY DE CALVIN KLEIN|CALVIN KLEIN|Floral
+D0194|ETERNITY FOR WOMEN REFLECTIONS DE CALVIN KLEIN|CALVIN KLEIN|Floral Frutal
+D0070|EUPHORIA DE CALVIN KLEIN|CALVIN KLEIN|Ámbar Floral
+D0284|FAME COUTURE DE PACO RABANNE|PACO RABANNE|Oriental Floral
+D0071|FAME DE LADY GAGA|LADY GAGA|Ámbar Floral
+D0072|FAME DE PACO RABANNE|PACO RABANNE|Almizcle Floral Amaderado
+D0264|FAME INTENSE DE PACO RABANNE|PACO RABANNE|Almizcle Floral
+D0200|FAME PARFUM DE PACO RABANNE|PACO RABANNE|Amaderado
+D0073|FANTASY DE BRITNEY SPEARS|BRITNEY SPEARS|Floral Frutal Gourmand
+D0076|FLOWER BOMB DE VIKTOR & ROLF|VIKTOR & ROLF|Floral Frutal Gourmand
+D0243|FLOWERBOMB TIGER LILY DE VIKTOR & ROLF|VIKTOR & ROLF|Oriental Floral
+D0077|FLOWER DE KENZO|KENZO|Floral
+D0078|GABRIELLE DE CHANEL|CHANEL|Ámbar Floral
+D0205|GAULTIER DIVINE DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Floral
+D0079|GLOW DE JENNIFER LOPEZ|JENNIFER LOPEZ|Ámbar Floral
+D0208|GODDESS DE BURBERRY|BURBERRY|Floral
+D0080|GOLD RUSH DE PARIS HILTON|PARIS HILTON|Aromática
+D0082|GOOD GIRL DE CAROLINA HERRERA|CAROLINA HERRERA|Floral Frutal Gourmand
+D0081|GOOD GIRL BLUSH DE CAROLINA HERRERA|CAROLINA HERRERA|Ámbar Floral
+D0219|GOOD GIRL DAZZLING GARDEN DE CAROLINA HERRERA|CAROLINA HERRERA|Chipre Floral
+D0083|GOOD GIRL SUPREME DE CAROLINA HERRERA|CAROLINA HERRERA|Floral
+D0085|GUCCI BLOOM DE GUCCI|GUCCI|Ámbar Floral
+D0278|GUCCI GUILTY ELIXIR DE PARFUM POUR FEMME DE GUCCI|GUCCI|Floral
+D0088|HALLOWEEN DE JESUS DEL POZO|JESUS DEL POZO|Oriental Floral
+D0090|HUGO WOMAN DE HUGO BOSS|HUGO BOSS|Ámbar Floral
+D0091|HYPNOSE DE LANCOME|LANCOME|Floral Frutal
+D0092|HYPNOTIC POISON DE CHRISTIAN DIOR|CHRISTIAN DIOR|Ámbar Vainilla
+D0093|I LOVE LOVE DE MOSCHINO|MOSCHINO|Ámbar Vainilla
+D0195|IDOLE NOW DE LANCOME|LANCOME|Almizcle Floral Amaderado
+D0094|IRRESISTIBLE GIVENCHY DE GIVENCHY|GIVENCHY|Ámbar Floral
+D0239|IRRESISTIBLE VERY FLORAL DE GIVENCHY|GIVENCHY|Floral Frutal
+D0095|JADORE DE CHRISTIAN DIOR|CHRISTIAN DIOR|Floral
+D0222|JUNGLE FANTASY DE BRITNEY SPEARS|BRITNEY SPEARS|Floral Frutal
+D0303|MUSE DE KENIA OS|KENIA OS|Floral Frutal Gourmand
+D0098|KENZO AMOUR DE KENZO|KENZO|Oriental Vainilla
+D0103|L INTERDIT DE GIVENCHY|GIVENCHY|Ámbar Vainilla
+D0100|L.12.12 MAGNETIC DE LACOSTE|LACOSTE|Floral Frutal
+D0101|L.12.12 POUR ELLE ELEGANT DE LACOSTE|LACOSTE|Almizcle Floral
+D0102|L.12.12 SPARKLING POUR ELLE DE LACOSTE|LACOSTE|Amaderado
+D0282|LA BELLE PARADISE GARDEN DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Floral Frutal Gourmand
+D0288|LA BOMBA DE CAROLINA HERRERA|CAROLINA HERRERA|Floral
+D0104|LA VIDA ES BELLA DE LANCOME|LANCOME|Oriental Floral
+D0270|LA VIDA ES BELLA L'ELIXIR DE LANCOME|LANCOME|Floral Frutal Gourmand
+D0295|LA VIE EST BELLE VANILLE NUDE DE LANCOME|LANCOME|Floral Frutal Gourmand
+D0106|LACOSTE INSPIRATION DE LACOSTE|LACOSTE|Oriental Floral
+D0108|LADY MILLION DE PACO RABANNE|PACO RABANNE|Ámbar Floral
+D0109|LADY MILLION LUCKY DE PACO RABANNE|PACO RABANNE|Floral Frutal
+D0110|LADY MILLION PRIVE DE PACO RABANNE|PACO RABANNE|Floral Frutal
+D0111|LADY MILLION ROYAL DE PACO RABANNE|PACO RABANNE|Ámbar Floral
+D0190|LIBRE DE YVES SAINT LAURENT|YVES SAINT LAURENT|Floral Frutal
+D0281|LIBRE FLOWERS & FLAMES DE YVES SAINT LAURENT|YVES SAINT LAURENT|Ámbar Fougère
+D0220|LIBRE L ABSOLUTE PLATINE DE YVES SAINT LAURENT|YVES SAINT LAURENT|Floral
+D0112|LIGHT BLUE DE DOLCE & GABBANA|DOLCE & GABBANA|Ámbar Floral
+D0290|LIGHT BLUE CAPRI IN LOVE EDP DE DOLCE & GABBANA|DOLCE & GABBANA|Floral Frutal
+D0115|LOLITA LEMPICKA DE LOLITA LEMPICKA|LOLITA LEMPICKA|Floral Frutal
+D0117|LOVE SPELL DE VICTORIA'S SECRET|VICTORIA'S SECRET|Floral Frutal Gourmand
+D0216|LOVEME DE TOUS|TOUS|Floral Frutal
+D0213|LOVEME THE EMERALD ELIXIR DE TOUS|TOUS|Ámbar Floral
+D0232|LUNAR LOVER DE CAROLINA HERRERA|CAROLINA HERRERA|Ámbar Floral
+D0118|MEOW DE KATY PERRY|KATY PERRY|Floral Frutal Gourmand
+D0119|MIAMI BLOSSOM DE ESCADA|ESCADA|Floral Frutal
+D0202|MISS DIOR EAU DE PARFUM|CHRISTIAN DIOR|Floral Frutal
+D0121|MISS DIOR ABSOLUTELY BLOOMING DE CHRISTIAN DIOR|CHRISTIAN DIOR|Ámbar Floral
+D0122|MISS DIOR BLOOMING BOUQUET DE CHRISTIAN DIOR|CHRISTIAN DIOR|Floral Frutal
+D0123|MISS DIOR CHERIE DE CHRISTIAN DIOR|CHRISTIAN DIOR|Chipre Floral
+D0297|MISS DIOR ESSENCE DE DIOR|DIOR|Chipre Floral
+D0124|MOD BLUSH DE ARIANA GRANDE|ARIANA GRANDE|Floral
+D0125|MOD VANILLA DE ARIANA GRANDE|ARIANA GRANDE|Ámbar Vainilla
+D0126|MON DE GUERLAIN DE GUERLAIN|GUERLAIN|Ámbar Amaderada
+D0128|MOONLIGHT DE ARIANA GRANDE|ARIANA GRANDE|Floral Frutal
+D0129|MOSCHINO FUNNY! DE MOSCHINO|MOSCHINO|Floral Frutal
+D0296|MY DEVOTION EDP INTENSE DE DOLCE & GABBANA|DOLCE & GABBANA|Floral Frutal
+D0130|MY VOYAGE DE NAUTICA|NAUTICA|Floral
+D0131|MY WAY DE GIORGIO ARMANI|GIORGIO ARMANI|Floral
+D0249|MY WAY NECTAR DE GIORGIO ARMANI|GIORGIO ARMANI|Floral Frutal
+D0271|MY WISH DE HALLOWEEN|HALLOWEEN|Floral Frutal Gourmand
+D0266|OBSESSED FOR WOMEN DE CALVIN KLEIN|CALVIN KLEIN|Aromática
+D0136|OLYMPEA AQUA DE PACO RABANNE|PACO RABANNE|Floral Acuática
+D0137|OLYMPEA DE PACO RABANNE|PACO RABANNE|Ámbar Floral
+D0224|OLYMPEA FLORA DE PACO RABANNE|PACO RABANNE|Floral
+D0259|OLYMPEA PARFUM DE PACO RABANNE|PACO RABANNE|Floral
+D0138|OMBRE ROSE DE JEAN CHARLES B|JEAN CHARLES BROSSEAU|Floral
+D0139|OMNIA CORAL DE BVLGARI|BVLGARI|Frutal
+D0140|OMNIA PARAIBA DE BVLGARI|BVLGARI|Floral Frutal
+D0192|ORGANZA DE GIVENCHY|GIVENCHY|Ámbar Floral
+D0142|PALOMA PICASSO DE PALOMA PICASSO|PALOMA PICASSO|Chipre Floral
+D0272|PARADOXE VIRTUAL FLOWER DE PRADA|PRADA|Floral
+D0143|PARIS DE YVES SAINT LAURENT|YVES SAINT LAURENT|Floral
+D0144|PARIS HILTON DE PARIS HILTON|PARIS HILTON|Floral Frutal
+D0242|PARTY LOVE DE ESCADA|ESCADA|Ámbar Vainilla
+D0145|PERFECT DE MARC JACOBS|MARC JACOBS|Ámbar Floral
+D0146|PERRY ELLIS 18 DE PERRY ELLIS|PERRY ELLIS|Floral Frutal
+D0240|PINK BY PINK DE VICTORIA'S SECRET|VICTORIA'S SECRET|Floral Frutal
+D0201|PLAY INTENSE DE GIVENCHY|GIVENCHY|Ámbar Floral
+D0148|POISON DE CHRISTIAN DIOR|CHRISTIAN DIOR|Ámbar Floral
+D0149|POISON GIRL DE CHRISTIAN DIOR|CHRISTIAN DIOR|Ámbar Vainilla
+D0151|Q BY DOLCE & GABBANA DE DOLCE & GABBANA|DOLCE & GABBANA|Aromática Frutal
+D0248|Q EDP INTENSE DE DOLCE & GABBANA|DOLCE & GABBANA|Aromática Frutal
+D0152|R.E.M. DE ARIANA GRANDE|ARIANA GRANDE|Ámbar Vainilla
+D0153|RALPH DE RALPH LAUREN|RALPH LAUREN|Floral Frutal
+D0293|RARE DE SELENA GOMEZ|SELENA GOMEZ|Oriental Vainilla
+D0155|RED DOOR DE ELIZABETH ARDEN|ELIZABETH ARDEN|Ámbar Floral
+D0157|ROMANCE DE RALPH LAUREN|RALPH LAUREN|Floral Frutal
+D0159|SAMSARA DE GUERLAIN|GUERLAIN|Ámbar Amaderada
+D0160|SCANDAL DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Chipre Floral
+D0256|SCANDAL ABSOLU DE JEAN PAUL GAULTIER|JEAN PAUL GAULTIER|Ámbar Floral
+D0161|SELENA GOMEZ DE SELENA GOMEZ|SELENA GOMEZ|Floral Frutal
+D0163|SHALIMAR DE GUERLAIN|GUERLAIN|Ámbar Especiada
+D0164|SI DE GIORGIO ARMANI|GIORGIO ARMANI|Chipre Frutal
+D0165|SIGNORINA DE SALVATORE FERRAGAMO|SALVATORE FERRAGAMO|Floral Frutal
+D0230|SORBETTO ROSSO DE ESCADA|ESCADA|Aromática Frutal
+D0167|SWEET LIKE CANDY DE ARIANA GRANDE|ARIANA GRANDE|Floral Frutal Gourmand
+D0204|SWEET TOOTH DE SABRINA CARPENTER|SABRINA CARPENTER|Floral Frutal Gourmand
+D0168|THANK U NEXT DE ARIANA GRANDE|ARIANA GRANDE|Floral Frutal Gourmand
+D0212|THANK U NEXT 2.0 DE ARIANA GRANDE|ARIANA GRANDE|Floral Frutal
+D0169|THE ONE DE DOLCE & GABBANA|DOLCE & GABBANA|Ámbar Floral
+D0198|THE ONLY ONE DE DOLCE & GABBANA|DOLCE & GABBANA|Ámbar Vainilla
+D0170|TOMMY GIRL DE TOMMY HILFIGER|TOMMY HILFIGER|Floral Frutal
+D0172|TOUCH OF PINK DE LACOSTE|LACOSTE|Floral Frutal
+D0173|TOY 2 BUBBLE GUM DE MOSCHINO|MOSCHINO|Floral Frutal
+D0174|TRESOR DE LANCOME|LANCOME|Ámbar Floral
+D0175|TRIBU DE BENETTON|BENETTON|Floral
+D0250|VALENTINO DONNA BORN IN ROMA GREEN STRAVAGANZA DE VALENTINO|VALENTINO|Ámbar Floral
+D0294|VALENTINO DONNA BORN IN ROMA IVORY DE VALENTINO|VALENTINO|Oriental Vainilla
+D0193|VANDERBILT DE GLORIA VANDERBILT|GLORIA VANDERBILT|Ámbar Floral
+D0179|VANILLA LACE DE VICTORIA'S SECRET|VICTORIA'S SECRET|Ámbar Vainilla
+D0180|VANITAS DE VERSACE|VERSACE|Floral
+DD0004N|VELVET PARADISE DE RUBI PERFUMERIA|RUBI PERFUMERIA|Creación
+D0181|VERSACE WOMAN DE VERSACE|VERSACE|Almizcle Floral Amaderado
+D0182|VERY GOOD GIRL DE CAROLINA HERRERA|CAROLINA HERRERA|Floral Frutal
+D0289|VERY GOOD GIRL ELIXIR DE CAROLINA HERRERA|CAROLINA HERRERA|Oriental Floral
+D0183|VERY IRRESISTIBLE DE GIVENCHY|GIVENCHY|Floral Frutal
+D0191|YES I AM BLOOM UP DE CACHAREL|CACHAREL|Floral Frutal
+ITA-CM001|FIERCE|ABERCROMBIE & FITCH|Amaderada Aromática
+ITA-CM002|ANIMALE FOR MEN|PARLUX|Chipre
+ITA-CM003|THE GOLDEN SECRET|ANTONIO BANDERAS|Amaderada Aromática
+ITA-CM004|BLUE SEDUCTION|ANTONIO BANDERAS|Aromática Acuática
+ITA-CM005|ARSENAL BLUE|ARSENAL|Amaderada Aromática
+ITA-CM006|AZZARO POUR HOMME|AZZARO|Aromática Fougère
+ITA-CM007|CHROME|AZZARO|Cítrica Aromática
+ITA-CM008|WANTED|AZZARO|Amaderada Especiada
+ITA-CM009|THE MOST WANTED|AZZARO|Amaderada Especiada
+ITA-CM010|AQVA POUR HOMME|BVLGARI|Aromática Acuática
+ITA-CM011|BVLGARI MAN IN BLACK|BVLGARI|Ámbar Floral
+ITA-CM012|CK ONE|CALVIN KLEIN|Cítrica Aromática
+ITA-CM013|ETERNITY FOR MEN|CALVIN KLEIN|Aromática Fougère
+ITA-CM014|OBSESSION FOR MEN|CALVIN KLEIN|Amaderada Acuática
+ITA-CM015|212 MEN|CAROLINA HERRERA|Almizcle Amaderado Floral
+ITA-CM016|212 VIP MEN|CAROLINA HERRERA|Ámbar Amaderada
+ITA-CM017|212 SEXY MEN|CAROLINA HERRERA|Ámbar Fougère
+ITA-CM018|212 HEROES|CAROLINA HERRERA|Aromática Fougère
+ITA-CM019|212 VIP BLACK RED|CAROLINA HERRERA|Amaderada Especiada
+ITA-CM020|212 VIP MEN BLACK|CAROLINA HERRERA|Aromática Fougère
+ITA-CM021|212 VIP PARTY FEVER FOR HIM|CAROLINA HERRERA|Amaderada Especiada
+ITA-CM022|212 WILD PARTY FOR HIM|CAROLINA HERRERA|Aromática Fougère
+ITA-CM023|212 VIP WINS|CAROLINA HERRERA|Aromática Amaderada
+ITA-CM024|BAD BOY|CAROLINA HERRERA|Ámbar Especiada
+ITA-CM025|CH MEN|CAROLINA HERRERA|Ámbar Especiada
+ITA-CM026|BAD BOY COBALT ELECTRIQUE|CAROLINA HERRERA|Amaderada Aromática
+ITA-CM027|HERRERA FOR MEN|CAROLINA HERRERA|Almizcle Amaderado
+ITA-CM028|212 HEROES MTV|CAROLINA HERRERA|Aromática Fougère
+ITA-CM029|DECLARATION|CARTIER|Aromática Amaderada
+ITA-CM030|EAU DE CARTIER|CARTIER|Cítrica Aromática
+ITA-CM031|PASHA DE CARTIER|CARTIER|Amaderada Aromática
+ITA-CM032|ALLURE HOMME SPORT|CHANEL|Amaderada Especiada
+ITA-CM033|BLEU DE CHANEL|CHANEL|Amaderada Aromática
+ITA-CM034|DIOR HOMME|CHRISTIAN DIOR|Amaderada Floral
+ITA-CM035|SAUVAGE EDT|CHRISTIAN DIOR|Ámbar Fougère
+ITA-CM036|FAHRENHEIT|CHRISTIAN DIOR|Aromática Fougère
+ITA-CM037|SAUVAGE ELIXIR|CHRISTIAN DIOR|Aromática
+ITA-CM038|CLINIQUE HAPPY FOR MEN|CLINIQUE|Cítrica Aromática
+ITA-CM039|LEGACY|CRISTIANO RONALDO|Aromática Fougère
+ITA-CM040|CR7|CRISTIANO RONALDO|Aromática Amaderada
+ITA-CM041|COOL WATER|DAVIDOFF|Aromática Acuática
+ITA-CM042|DIESEL BAD|DIESEL|Amaderada Aromática
+ITA-CM043|ONLY THE BRAVE|DIESEL|Amaderada Aromática
+ITA-CM044|ONLY THE BRAVE TATTOO|DIESEL|Aromática Fougère
+ITA-CM045|DIESEL PLUS PLUS|DIESEL|Aromática Verde
+ITA-CM046|FUEL FOR LIFE|DIESEL|Aromática Fougère
+ITA-CM047|K BY DOLCE & GABBANA|DOLCE & GABBANA|Amaderada Aromática
+ITA-CM048|LIGHT BLUE POUR HOMME|DOLCE & GABBANA|Amaderada
+ITA-CM049|THE ONE FOR MEN|DOLCE & GABBANA|Amaderada Especiada
+ITA-CM050|STRONGER WITH YOU INTENSELY|EMPORIO ARMANI|Ámbar Especiada
+ITA-CM051|PLEASURES FOR MEN|ESTÉE LAUDER|Aromática Acuática
+ITA-CM052|FERRARI BLACK|FERRARI|Aromática Fougère
+ITA-CM053|GREY FLANNEL|GEOFFREY BEENE|Ámbar Amaderada
+ITA-CM054|STRONGER WITH YOU|GIORGIO ARMANI|Aromática Fougère
+ITA-CM055|ACQUA DI GIO|GIORGIO ARMANI|Aromática Acuática
+ITA-CM056|ARMANI CODE (BLACK CODE)|GIORGIO ARMANI|Amaderada Aromática
+ITA-CM057|ACQUA DI GIO PROFUMO|GIORGIO ARMANI|Aromática Acuática
+ITA-CM058|EMPORIO ARMANI DIAMONDS FOR MEN|GIORGIO ARMANI|Amaderada Aromática
+ITA-CM059|ARMANI CODE ICE|GIORGIO ARMANI|Aromática Acuática
+ITA-CM060|ARMANI CODE PROFUMO|GIORGIO ARMANI|Ámbar Especiada
+ITA-CM061|ARMANI CODE EDT|GIORGIO ARMANI|Amaderada Aromática
+ITA-CM062|ACQUA DI GIO ABSOLU|GIORGIO ARMANI|Amaderada Aromática
+ITA-CM063|STRONGER WITH YOU ABSOLUTELY|GIORGIO ARMANI|Oriental Fougère
+ITA-CM064|ARMANI MANIA|GIORGIO ARMANI|Amaderada Especiada
+ITA-CM065|GIVENCHY BLUE LABEL|GIVENCHY|Amaderada Especiada
+ITA-CM066|GIVENCHY POUR HOMME|GIVENCHY|Amaderada Aromática
+ITA-CM067|GENTLEMEN ONLY|GIVENCHY|Amaderada Aromática
+ITA-CM068|GENTLEMAN|GIVENCHY|Amaderada Aromática
+ITA-CM069|GUCCI GUILTY POUR HOMME|GUCCI|Aromática Fougère
+ITA-CM070|GUCCI POUR HOMME|GUCCI|Amaderada Aromática
+ITA-CM071|VETIVER|GUERLAIN|Amaderada Aromática
+ITA-CM072|GUESS FOR MEN|GUESS|Aromática Fougère
+ITA-CM073|TERRE D'HERMES|HERMES|Amaderada Especiada
+ITA-CM074|BOSS ENERGISED / HUGO ENERGISE|HUGO BOSS|Aromática Verde
+ITA-CM075|BOSS THE SCENT|HUGO BOSS|Aromática Especiada
+ITA-CM076|BOSS IN MOTION|HUGO BOSS|Aromática Acuática
+ITA-CM077|BOSS BOTTLED|HUGO BOSS|Amaderada Especiada
+ITA-CM078|BOSS ORANGE FOR MEN|HUGO BOSS|Amaderada Especiada
+ITA-CM079|BOSS BOTTLED UNLIMITED|HUGO BOSS|Aromática Fougère
+ITA-CM080|BOSS BOTTLED NIGHT|HUGO BOSS|Amaderada Aromática
+ITA-CM081|BOSS INTENSE / BOSS #6|HUGO BOSS|Amaderada Aromática
+ITA-CM082|HUGO DE HUGO BOSS|HUGO BOSS|Ámbar Especiada
+ITA-CM083|HUGO RED|HUGO BOSS|Aromática Fougère
+ITA-CM084|HUGO DARK BLUE|HUGO BOSS|Oriental Amaderada
+ITA-CM085|HUGO JUST DIFFERENT|HUGO BOSS|Aromática Fougère
+ITA-CM086|BOSS BOTTLED ELIXIR|HUGO BOSS|Ámbar Amaderada
+ITA-CM087|BOSS BOTTLED INFINITE|HUGO BOSS|Amaderada Aromática
+ITA-CM088|BOSS SELECTION|HUGO BOSS|Amaderada Aromática
+ITA-CM089|HUGO ICED|HUGO BOSS|Aromática Acuática
+ITA-CM090|HUGO XY|HUGO BOSS|Aromática Fougère
+ITA-CM091|HUGO ELEMENT|HUGO BOSS|Aromática Acuática
+ITA-CM092|OUD FOR GREATNESS|INITIO PARFUMS PRIVES|Ámbar Amaderada
+ITA-CM093|L'EAU D'ISSEY POUR HOMME|ISSEY MIYAKE|Aromática Acuática
+ITA-CM094|SCANDAL POUR HOMME|JEAN PAUL GAULTIER|Ámbar Amaderada
+ITA-CM095|ULTRA MALE|JEAN PAUL GAULTIER|Ámbar Fougère
+ITA-CM096|LE MALE|JEAN PAUL GAULTIER|Amaderado
+ITA-CM097|LE BEAU|JEAN PAUL GAULTIER|Amaderada Aromática
+ITA-CM098|SCANDAL LE PARFUM|JEAN PAUL GAULTIER|Ámbar
+ITA-CM099|LE MALE LE PARFUM|JEAN PAUL GAULTIER|Aromática
+ITA-CM100|LE BEAU PARADISE GARDEN|JEAN PAUL GAULTIER|Verde Acuático
+ITA-CM101|LE MALE ELIXIR|JEAN PAUL GAULTIER|Amaderada Aromática
+ITA-CM102|LACOSTE ESSENTIAL|LACOSTE|Amaderada Especiada
+ITA-CM103|LACOSTE L.12.12 BLANC|LACOSTE|Ámbar Fougère
+ITA-CM104|LACOSTE RED|LACOSTE|Aromática Fougère
+ITA-CM105|LACOSTE L.12.12 NOIR|LACOSTE|Amaderada Aromática
+ITA-CM106|LACOSTE ENERGIZED / L.12.12 JAUNE|LACOSTE|Aromática Especiada
+ITA-CM107|LACOSTE L.12.12 BLUE|LACOSTE|Aromática Acuática
+ITA-CM108|ASAD ZANZIBAR|LATTAFA|Oriental Especiada
+ITA-CM109|ASAD BOURBON|LATTAFA|Oriental Especiada
+ITA-CM110|HIS CONFESSION|LATTAFA|Ámbar Amaderada
+ITA-CM111|OMBRE NOMADE|LOUIS VUITTON|Ámbar Amaderada
+ITA-CM112|IMAGINATION|LOUIS VUITTON|Cítrica Aromática
+ITA-CM113|MERCEDES BENZ|MERCEDES BENZ|Amaderada Aromática
+ITA-CM114|EMBLEM|MONTBLANC|Aromática Fougère
+ITA-CM115|EXPLORER|MONTBLANC|Amaderada Aromática
+ITA-CM116|LEGEND|MONTBLANC|Ámbar
+ITA-CM117|STARWALKER|MONTBLANC|Amaderada Especiada
+ITA-CM118|LEGEND SPIRIT|MONTBLANC|Amaderada Aromática
+ITA-CM119|TOY BOY|MOSCHINO|Amaderada Especiada
+ITA-CM120|NAUTICA VOYAGE|NAUTICA|Amaderada Chipre
+ITA-CM121|PACO RABANNE POUR HOMME|PACO RABANNE|Aromática Fougère
+ITA-CM122|1 MILLION|PACO RABANNE|Amaderada Especiada
+ITA-CM123|INVICTUS|PACO RABANNE|Amaderada Acuática
+ITA-CM124|INVICTUS ONYX|PACO RABANNE|Amaderada Acuática
+ITA-CM125|1 MILLION INTENSE|PACO RABANNE|Amaderada Especiada
+ITA-CM126|INVICTUS VICTORY|PACO RABANNE|Amaderada
+ITA-CM127|INVICTUS AQUA|PACO RABANNE|Aromática Acuática
+ITA-CM128|BLACK XS FOR HIM|PACO RABANNE|Amaderada Aromática
+ITA-CM129|BLACK XS L'APHRODISIAQUE|PACO RABANNE|Cuero
+ITA-CM130|BLACK XS L'EXCES|PACO RABANNE|Amaderada Aromática
+ITA-CM131|INVICTUS LEGEND|PACO RABANNE|Amaderada Acuática
+ITA-CM132|INVICTUS INTENSE|PACO RABANNE|Ámbar Amaderada
+ITA-CM133|1 MILLION LUCKY|PACO RABANNE|Amaderada
+ITA-CM134|1 MILLION PRIVE|PACO RABANNE|Amaderada
+ITA-CM135|1 MILLION ELIXIR|PACO RABANNE|Amaderada Aromática
+ITA-CM136|PURE XS|PACO RABANNE|Ámbar Amaderada
+ITA-CM137|PHANTOM|PACO RABANNE|Amaderada Aromática
+ITA-CM138|INVICTUS VICTORY ELIXIR|PACO RABANNE|Ámbar Amaderada
+ITA-CM139|INVICTUS PLATINUM|PACO RABANNE|Aromática Acuática
+ITA-CM140|POLO RED|PACO RABANNE|Amaderada Especiada
+ITA-CM141|LAPIDUS POUR HOMME|TED LAPIDUS|Ámbar
+ITA-CM142|OUD WOOD|TOM FORD|Ámbar Amaderada
+ITA-CM143|OMBRE LEATHER|TOM FORD|Cuero
+ITA-CM144|NOIR DE NOIR|TOM FORD|Oriental Floral
+ITA-CM145|TOMMY|TOMMY HILFIGER|Cítrica Aromática
+ITA-CM146|MINOTAURE|PALOMA PICASSO|Oriental Vainilla
+ITA-CM147|VALENTINO UOMO|VALENTINO|Amaderada Aromática
+ITA-CM148|PARIS HILTON FOR MEN|PARIS HILTON|Amaderada Aromática
+ITA-CM149|GOLD RUSH FOR MEN|PARIS HILTON|Ámbar Fougère
+ITA-CM150|PARIS HILTON MEN|PARIS HILTON|Aromática Fougère
+ITA-CM151|THE OMNISCIENT MR THOMPSON|PENHALIGON'S|Ámbar Amaderada
+ITA-CM152|EROS|VERSACE|Ámbar Fougère
+ITA-CM153|DYLAN BLUE|VERSACE|Aromática Fougère
+ITA-CM154|BLUE JEANS|VERSACE|Aromática Fougère
+ITA-CM155|EROS FLAME|VERSACE|Amaderada Especiada
+ITA-CM156|VERSACE MAN EAU FRAICHE|VERSACE|Amaderada Acuática
+ITA-CM157|EROS ENERGY|VERSACE|Cítrica Aromática
+ITA-CM158|360 RED|PERRY ELLIS|Ámbar Especiada
+ITA-CM159|360 FOR MEN|PERRY ELLIS|Aromática
+ITA-CM160|PERRY ELLIS 18|PERRY ELLIS|Aromática Fougère
+ITA-CM161|SWISS ARMY|VICTORINOX|Aromática Fougère
+ITA-CM162|LUNA ROSSA CARBON|PRADA|Ámbar Amaderada
+ITA-CM163|LUNA ROSSA OCEAN|PRADA|Aromática Fougère
+ITA-CM164|Y LE PARFUM|YVES SAINT LAURENT|Aromática Fougère
+ITA-CM165|Y DE YVES SAINT LAURENT|YVES SAINT LAURENT|Amaderada Aromática
+ITA-CM166|MYSLF|YVES SAINT LAURENT|Amaderada Aromática
+ITA-CM167|POLO SPORT|RALPH LAUREN|Aromática Verde
+ITA-CM168|POLO BLUE|RALPH LAUREN|Aromática Fougère
+ITA-CM169|ZLATAN|ZLATAN IBRAHIMOVIC|Amaderada Aromática
+ITA-CF001|R.E.M.|ARIANA GRANDE|Ámbar Vainilla
+ITA-CF002|SWEET LIKE CANDY|ARIANA GRANDE|Floral Frutal Gourmand
+ITA-CF003|CLOUD|ARIANA GRANDE|Floral Frutal Gourmand
+ITA-CF004|THANK U NEXT|ARIANA GRANDE|Floral Frutal Gourmand
+ITA-CF005|ARI|ARIANA GRANDE|Floral Frutal Gourmand
+ITA-CF006|MOD VANILLA|ARIANA GRANDE|Ámbar Vainilla
+ITA-CF007|MAD ABOUT YOU|BATH & BODY WORKS|Floral Frutal
+ITA-CF008|273|FRED HAYMAN (BEVERLY HILLS)|Floral
+ITA-CF009|TRIBU|BENETTON|Floral
+ITA-CF010|FANTASY|BRITNEY SPEARS|Floral Frutal Gourmand
+ITA-CF011|FANTASY MIDNIGHT|BRITNEY SPEARS|Floral Frutal Gourmand
+ITA-CF012|BELIEVE|BRITNEY SPEARS|Floral Frutal
+ITA-CF013|CURIOUS|BRITNEY SPEARS|Floral Frutal
+ITA-CF014|CIRCUS FANTASY|BRITNEY SPEARS|Floral Frutal Gourmand
+ITA-CF015|BURBERRY FOR HER|BURBERRY|Floral Frutal Gourmand
+ITA-CF016|BURBERRY HER ELIXIR|BURBERRY|Floral Frutal Gourmand
+ITA-CF017|OMNIA CORAL|BVLGARI|Frutal
+ITA-CF018|OMNIA AMETHYSTE|BVLGARI|Floral
+ITA-CF019|OMNIA CRYSTALLINE|BVLGARI|Floral Acuática
+ITA-CF020|ANAIS ANAIS|CACHAREL|Floral
+ITA-CF021|AMOR AMOR|CACHAREL|Floral Frutal
+ITA-CF022|CK IN2U HER|CALVIN KLEIN|Floral Frutal
+ITA-CF023|GOOD GIRL LEGERE|CAROLINA HERRERA|Floral Frutal
+ITA-CF024|GOOD GIRL|CAROLINA HERRERA|Floral Frutal Gourmand
+ITA-CF025|212|CAROLINA HERRERA|Almizcle Floral Amaderado
+ITA-CF026|212 VIP|CAROLINA HERRERA|Ámbar Vainilla
+ITA-CF027|212 VIP ROSE|CAROLINA HERRERA|Floral Frutal
+ITA-CF028|212 WILD PARTY FOR HER|CAROLINA HERRERA|Floral Frutal
+ITA-CF029|212 HEROES FOR HER|CAROLINA HERRERA|Floral Frutal
+ITA-CF030|212 SEXY|CAROLINA HERRERA|Ámbar Floral
+ITA-CF031|CH|CAROLINA HERRERA|Ámbar Floral
+ITA-CF032|VERY GOOD GIRL|CAROLINA HERRERA|Floral Frutal
+ITA-CF033|CH PRIVEE|CAROLINA HERRERA|Ámbar Floral
+ITA-CF034|CHIC|CAROLINA HERRERA|Floral
+ITA-CF035|CH QUEENS|CAROLINA HERRERA|Floral Frutal
+ITA-CF036|GOOD GIRL BLUSH|CAROLINA HERRERA|Ámbar Floral
+ITA-CF037|CH SUBLIME|CAROLINA HERRERA|Floral Frutal
+ITA-CF038|LA BOMBA|CAROLINA HERRERA|Floral
+ITA-CF039|CHANEL N°5|CHANEL|Floral Aldehídica
+ITA-CF040|COCO MADEMOISELLE|CHANEL|Ámbar Floral
+ITA-CF041|CHANCE|CHANEL|Chipre Floral
+ITA-CF042|CHANCE EAU TENDRE|CHANEL|Floral Frutal
+ITA-CF043|MISS DIOR BLOOMING BOUQUET|CHRISTIAN DIOR|Floral Frutal
+ITA-CF044|J'ADORE|CHRISTIAN DIOR|Floral
+ITA-CF045|DIOR ADDICT|CHRISTIAN DIOR|Ámbar Floral
+ITA-CF046|MISS DIOR EDP|CHRISTIAN DIOR|Floral Frutal
+ITA-CF047|DUNE|CHRISTIAN DIOR|Ámbar Floral
+ITA-CF048|HYPNOTIC POISON|CHRISTIAN DIOR|Ámbar Vainilla
+ITA-CF049|POISON GIRL|CHRISTIAN DIOR|Ámbar Vainilla
+ITA-CF050|DIESEL ZERO PLUS FEMININE|DIESEL|Floral Frutal
+ITA-CF051|DEVOTION|DOLCE & GABBANA|Ámbar Vainilla
+ITA-CF052|L'IMPERATRICE / EMPERATRIZ|DOLCE & GABBANA|Floral Frutal
+ITA-CF053|LIGHT BLUE|DOLCE & GABBANA|Floral Frutal
+ITA-CF054|THE ONE FOR WOMEN|DOLCE & GABBANA|Ámbar Floral
+ITA-CF055|DKNY BE DELICIOUS|DONNA KARAN|Floral Frutal
+ITA-CF056|BECAUSE IT'S YOU|EMPORIO ARMANI|Floral Frutal
+ITA-CF057|SORBETTO ROSSO|ESCADA|Aromática Frutal
+ITA-CF058|AGUA DE SOL / AGUA DEL SOL|ESCADA|Floral Frutal
+ITA-CF059|CHERRY IN THE AIR|ESCADA|Floral Frutal
+ITA-CF060|MOON SPARKLE|ESCADA|Floral Frutal
+ITA-CF061|ROCK IN RIO|ESCADA|Floral Frutal
+ITA-CF062|TAJ SUNSET|ESCADA|Floral Frutal
+ITA-CF063|PLEASURES|ESTÉE LAUDER|Floral
+ITA-CF064|SI|GIORGIO ARMANI|Chipre Frutal
+ITA-CF065|ACQUA DI GIO POUR FEMME|GIORGIO ARMANI|Floral Acuática
+ITA-CF066|MY WAY|GIORGIO ARMANI|Floral
+ITA-CF067|SI PASSIONE|GIORGIO ARMANI|Floral Frutal
+ITA-CF068|ARMANI CODE POUR FEMME|GIORGIO ARMANI|Ámbar Floral
+ITA-CF069|EMPORIO ARMANI IN LOVE WITH YOU|GIORGIO ARMANI|Ámbar Floral
+ITA-CF070|LIGHT DI GIOIA|GIORGIO ARMANI|Floral Acuática
+ITA-CF071|EMPORIO ARMANI WHITE FOR HER|GIORGIO ARMANI|Floral
+ITA-CF072|ANGE OU DEMON|GIVENCHY|Ámbar Floral
+ITA-CF073|AMARIGE|GIVENCHY|Floral
+ITA-CF074|GUCCI BLOOM|GUCCI|Ámbar Floral
+ITA-CF075|FLORA GORGEOUS GARDENIA|GUCCI|Floral Frutal
+ITA-CF076|FLORA GORGEOUS JASMINE|GUCCI|Floral
+ITA-CF077|FLORA GORGEOUS ORCHID|GUCCI|Floral
+ITA-CF078|GUCCI FLORA|GUCCI|Floral Frutal
+ITA-CF079|MON GUERLAIN|GUERLAIN|Ámbar Amaderada
+ITA-CF080|SAMSARA|GUERLAIN|Ámbar Amaderada
+ITA-CF081|GUESS FOR WOMEN|GUESS|Floral Frutal
+ITA-CF082|HUGO WOMAN|HUGO BOSS|Ámbar Floral
+ITA-CF083|BOSS ALIVE|HUGO BOSS|Floral Frutal
+ITA-CF084|HUGO PURE PURPLE|HUGO BOSS|Floral Frutal
+ITA-CF085|BOSS JOUR|HUGO BOSS|Floral
+ITA-CF086|BOSS MA VIE|HUGO BOSS|Floral
+ITA-CF087|BOSS FEMME|HUGO BOSS|Floral Frutal
+ITA-CF088|HUGO DEEP RED|HUGO BOSS|Ámbar Floral
+ITA-CF089|BOSS THE SCENT FOR HER|HUGO BOSS|Floral Frutal
+ITA-CF090|BOSS ORANGE FOR WOMEN|HUGO BOSS|Floral Frutal
+ITA-CF091|SCANDAL|JEAN PAUL GAULTIER|Chipre Floral
+ITA-CF092|LA BELLE|JEAN PAUL GAULTIER|Ámbar Vainilla
+ITA-CF093|GAULTIER DIVINE|JEAN PAUL GAULTIER|Floral
+ITA-CF094|HALLOWEEN|JESUS DEL POZO|Oriental Floral
+ITA-CF095|NECTARINE BLOSSOM & HONEY|JO MALONE|Floral Frutal
+ITA-CF096|JOVAN MUSK FOR WOMEN|JOVAN|Ámbar Floral
+ITA-CF097|VIVA LA JUICY|JUICY COUTURE|Floral Frutal Gourmand
+ITA-CF098|MEOW|KATY PERRY|Floral Frutal Gourmand
+ITA-CF099|FLOWER BY KENZO|KENZO|Floral
+ITA-CF100|LOVE DON'T BE SHY|KILIAN|Ámbar
+ITA-CF101|BFF|KIM KARDASHIAN|Floral Frutal
+ITA-CF102|L.12.12 SPARKLING|LACOSTE|Floral Frutal
+ITA-CF103|LACOSTE POUR FEMME|LACOSTE|Floral
+ITA-CF104|TOUCH OF PINK|LACOSTE|Floral Frutal
+ITA-CF105|L.12.12 MAGNETIC|LACOSTE|Floral Frutal
+ITA-CF106|LACOSTE SENSUELLE|LACOSTE|Ámbar Floral
+ITA-CF107|EAU DE LACOSTE|LACOSTE|Floral
+ITA-CF108|LA VIE EST BELLE|LANCOME|Oriental Floral
+ITA-CF109|TRESOR|LANCOME|Ámbar Floral
+ITA-CF110|LOLITA LEMPICKA|LOLITA LEMPICKA|Floral Frutal
+ITA-CF111|ATTRAPE-RÊVES / ATRAPA SUEÑOS|LOUIS VUITTON|Ámbar Floral
+ITA-CF112|DAISY|MARC JACOBS|Almizcle Floral Amaderado
+ITA-CF113|CRY BABY PERFUME MILK|MELANIE MARTINEZ|Ámbar Vainilla
+ITA-CF114|I LOVE LOVE|MOSCHINO|Ámbar Vainilla
+ITA-CF115|MOSCHINO FUNNY!|MOSCHINO|Floral Frutal
+ITA-CF116|TOY 2|MOSCHINO|Floral Frutal
+ITA-CF117|TOY 2 BUBBLE GUM|MOSCHINO|Floral Frutal
+ITA-CF118|CHEAP AND CHIC|MOSCHINO|Floral
+ITA-CF119|FRESH COUTURE|MOSCHINO|Floral Frutal
+ITA-CF120|PINK FRESH COUTURE|MOSCHINO|Floral Frutal
+ITA-CF121|ANGEL|MUGLER|Ámbar Vainilla
+ITA-CF122|BELLA|NINA RICCI|Floral Frutal
+ITA-CF123|RICCI RICCI|NINA RICCI|Chipre Floral
+ITA-CF124|BLACK XS FOR HER|PACO RABANNE|Almizcle Floral Amaderado
+ITA-CF125|FAME|PACO RABANNE|Almizcle Floral Amaderado
+ITA-CF126|LADY MILLION LUCKY|PACO RABANNE|Floral Frutal
+ITA-CF127|LADY MILLION|PACO RABANNE|Ámbar Floral
+ITA-CF128|OLYMPEA|PACO RABANNE|Ámbar Floral
+ITA-CF129|OLYMPEA AQUA|PACO RABANNE|Floral Acuática
+ITA-CF130|ULTRAVIOLET|PACO RABANNE|Ámbar Floral
+ITA-CF131|PARIS HILTON|PARIS HILTON|Floral Frutal
+ITA-CF132|CAN CAN|PARIS HILTON|Floral Frutal
+ITA-CF133|DAZZLE|PARIS HILTON|Floral Frutal
+ITA-CF134|GOLD RUSH FOR WOMEN|PARIS HILTON|Floral Frutal
+ITA-CF135|HEIRESS|PARIS HILTON|Floral Frutal
+ITA-CF136|PASSPORT|PARIS HILTON|Floral Frutal
+ITA-CF137|360 FOR WOMEN|PERRY ELLIS|Floral
+ITA-CF138|PERRY ELLIS 18 FOR WOMEN|PERRY ELLIS|Floral Frutal
+ITA-CF139|360 CORAL|PERRY ELLIS|Floral Frutal
+ITA-CF140|PRADA CANDY|PRADA|Ámbar Vainilla
+ITA-CF141|RALPH|RALPH LAUREN|Floral Frutal
+ITA-CF142|SIGNORINA|SALVATORE FERRAGAMO|Floral Frutal
+ITA-CF143|INCANTO CHARMS|SALVATORE FERRAGAMO|Floral Frutal
+ITA-CF144|SELENA GOMEZ|SELENA GOMEZ|Floral Frutal
+ITA-CF145|SOFIA|SOFIA VERGARA|Floral Frutal
+ITA-CF146|SOLEIL DE FEU|TOM FORD|Ámbar Floral
+ITA-CF147|BLACK ORCHID|TOM FORD|Ámbar Floral
+ITA-CF148|TOMMY GIRL|TOMMY HILFIGER|Floral Frutal
+ITA-CF149|VALENTINA PINK|VALENTINO|Floral Frutal
+ITA-CF150|DONNA BORN IN ROMA|VALENTINO|Ámbar Floral
+ITA-CF151|BRIGHT CRYSTAL|VERSACE|Floral Frutal
+ITA-CF152|YELLOW DIAMOND|VERSACE|Floral Frutal
+ITA-CF153|EROS POUR FEMME|VERSACE|Floral Amaderado
+ITA-CF154|VERSACE POUR FEMME|VERSACE|Floral
+ITA-CF155|BONBON|VIKTOR & ROLF|Floral Frutal Gourmand
+ITA-CF156|BOMBSHELL|VICTORIA'S SECRET|Floral Frutal
+ITA-CF157|COCONUT PASSION|VICTORIA'S SECRET|Ámbar Vainilla
+ITA-CF158|KISS|VICTORIA'S SECRET|Floral Frutal
+ITA-CF159|PURE SEDUCTION|VICTORIA'S SECRET|Floral Frutal
+ITA-CF160|JUICED BERRY / BERRY KISS|VICTORIA'S SECRET|Floral Frutal
+ITA-CF161|SEXY ANGEL / ANGEL|VICTORIA'S SECRET|Floral Frutal
+ITA-CF162|PINK CHIFFON|VICTORIA'S SECRET|Floral Frutal
+ITA-CF163|SWISS ARMY FOR HER|VICTORINOX|Floral Frutal
+ITA-CF164|CINEMA|YVES SAINT LAURENT|Ámbar Floral
+ITA-CF165|LIBRE LE PARFUM|YVES SAINT LAURENT|Ámbar Fougère
+ITA-CF166|MON PARIS|YVES SAINT LAURENT|Chipre Frutal
+ITA-CF167|PARISIENNE|YVES SAINT LAURENT|Chipre Floral
+ITA-CF168|LIBRE|YVES SAINT LAURENT|Floral Frutal
+ITA-CF169|BLACK OPIUM|YVES SAINT LAURENT|Ámbar Vainilla
+ITA-AN001|L'AVENTURE|AL HARAMAIN|Chipre Frutal
+ITA-AN002|CLUB DE NUIT (BESTIA NEGRA)|ARMAF|Amaderada Aromática
+ITA-AN003|MILLESIME IMPERIAL|CREED|Almizcle Amaderado Floral
+ITA-AN004|AVENTUS|CREED|Chipre Frutal
+ITA-AN005|SILVER MOUNTAIN WATER|CREED|Aromática
+ITA-AN006|NITRO RED|DUMONT|Aromática Especiada
+ITA-AN007|7 DE LOEWE|LOEWE|Amaderada Aromática
+ITA-AN008|SOLO LOEWE|LOEWE|Ámbar
+ITA-AN009|LAYTON|PARFUMS DE MARLY|Ámbar Floral
+ITA-AN010|BLACK AFGANO|NASOMATTO|Amaderada Aromática
+ITA-AN011|SPICEBOMB|VIKTOR & ROLF|Amaderada Especiada
+ITA-AN012|XJ 1861 NAXOS|XERJOFF|Cítrica Gourmand
+ITA-AN013|ADRENALINA|YANBAL|Aromática Fougère
+ITA-AN014|AROM|YANBAL|Amaderada Aromática
+ITA-AN015|OHM|YANBAL|Amaderada Aromática
+ITA-AN016|OSADIA MEN|YANBAL|Amaderada Especiada
+ITA-AN017|SOLO|YANBAL|Aromática Amaderada
+ITA-AND001|ODYSSEY CANDY|ARMAF|Floral Frutal Gourmand
+ITA-AND002|YUM YUM|ARMAF|Floral Frutal
+ITA-AND003|VIRGIN ISLAND WATER|CREED|Cítrica
+ITA-AND004|L'EAU D'ISSEY POUR FEMME|ISSEY MIYAKE|Floral Acuática
+ITA-AND005|HAYA|LATTAFA|Floral
+ITA-AND006|NOBLE BLUSH|LATTAFA|Floral Frutal
+ITA-AND007|YARA|LATTAFA|Ámbar Vainilla
+ITA-AND008|YARA TOUS|LATTAFA|Frutal
+ITA-AND009|YARA MOI|LATTAFA|Floral Frutal
+ITA-AND010|YARA CANDY|LATTAFA|Floral Frutal
+ITA-AND011|HER CONFESSION|LATTAFA|Ámbar Floral
+ITA-AND012|MAYAR|LATTAFA|Floral Frutal
+ITA-AND013|NOW WOMEN|LATTAFA|Floral Frutal
+ITA-AND014|ECLAIRE|LATTAFA|Floral Frutal Gourmand
+ITA-AND015|BEACH WALK|MAISON MARTIN MARGIELA|Floral Acuática
+ITA-AND016|DELINA|PARFUMS DE MARLY|Chipre Frutal
+ITA-AND017|DELINA LA ROSEE|PARFUMS DE MARLY|Floral
+ITA-AND018|ROSES MUSK|MONTALE|Floral
+ITA-AND019|FLOWERBOMB|VIKTOR & ROLF|Floral Frutal Gourmand
+ITA-AND020|CIELO|YANBAL|Floral
+ITA-AND021|CCORI ROSE|YANBAL|Floral Frutal
+ITA-AND022|GAIA|YANBAL|Floral Verde
+ITA-AND023|OSADIA WOMEN|YANBAL|Floral Frutal
+ITA-ANU001|ACQUA DI PARMA BLU MEDITERRANEO|ACQUA DI PARMA|Cítrica Aromática
+ITA-ANU002|9 AM|AFNAN|Ámbar Vainilla
+ITA-ANU003|9 PM|AFNAN|Ámbar Vainilla
+ITA-ANU004|PEGASUS (AHLI)|AHLI|Ámbar Floral
+ITA-ANU005|KARPOS (AHLI)|AHLI|Cítrica Aromática
+ITA-ANU006|VEGA (AHLI)|AHLI|Ámbar Amaderada
+ITA-ANU007|AMBER OUD GOLD EDITION|AL HARAMAIN|Ámbar Vainilla
+ITA-ANU008|ODYSSEY MANDARIN SKY|ARMAF|Cítrica
+ITA-ANU009|ODYSSEY LIMONI FRESH|ARMAF|Cítrica Aromática
+ITA-ANU010|ODYSSEY DUBAI CHOCOLAT|ARMAF|Oriental Vainilla
+ITA-ANU011|ODYSSEY SPECTRA|ARMAF|Amaderada Aromática
+IT0001|ARRÚ RRÚ|ARRÚ RRÚ|Floral Suave
+IT0002|BHARARA NICHE|BHARARA|Oriental Amaderada
+IT0003|BHARARA KING|BHARARA|Aromática Frutal
+IT0004|BLEECKER STREET|BOND No. 9|Ámbar Amaderada
+IT0005|CREED SANTAL|CREED|Amaderada Especiada
+IT0006|MOLECULE 01|ESCENTRIC MOLECULES|Almizcle Amaderado
+IT0007|BIANCO LATTE|GIARDINI DI TOSCANA|Ámbar Vainilla
+IT0008|PARAGON|INITIO PARFUMS PRIVES|Amaderada Aromática
+IT0009|BLACK PHANTOM|KILIAN|Ámbar Vainilla
+IT0010|ANGEL'S SHARE|KILIAN|Ámbar Vainilla
+IT0011|KHAMRAH|LATTAFA|Ámbar Especiada
+IT0012|SANTAL 33|LE LABO|Amaderada Aromática
+IT0013|BACCARAT ROUGE 540|MAISON FRANCIS KURKDJIAN|Ámbar Floral
+IT0014|RED TOBACCO|MANCERA|Amaderada Especiada
+IT0015|ARABIANS TONKA|MONTALE|Ámbar Vainilla
+IT0016|BARAONDA|NASOMATTO|Ámbar Amaderada
+IT0017|CHERRY SMOKE|TOM FORD|Ámbar Floral
+IT0018|ERBA PURA|XERJOFF|Ámbar
+IT0019|DISNEY PRINCESS|DISNEY|Floral Frutal
+IT0020|DISNEY PIXAR CARS|DISNEY|Aromática Fresca
+CIMP0095|FIERCE|ABERCROMBIE & FITCH|Amaderada Aromática
+DIMP0056|AGUA DEL SOL|ADOLFO DOMINGUEZ|Floral Acuática
+UIMP0049|9 AM (UNISEX)|AFNAN|Cítrica Aromática
+UIMP0017|9 PM|AFNAN|Ámbar Vainilla
+UIMP0004|AMBER OUD GOLD EDITION|AL HARAMAIN|Ámbar Vainilla
+UIMP0003|L'AVENTURE|AL HARAMAIN|Aromática Acuática
+UIMP0021|OUD SAFFRON|AL HARAMAIN|Amaderada Especiada
+UIMP0006|SUBLIME|AL HARAMAIN|Floral Amaderada
+CIMP0103|ADRENALINA|ANIMALE|Aromática Fougère
+CIMP0110|ANIMALE MEN|ANIMALE|Chipre Aromática
+CIMP0116|BLUE SEDUCTION MEN|ANTONIO BANDERAS|Aromática Acuática
+DIMP0051|CIELO|ANTONIO BANDERAS|Floral Frutal
+CIMP0127|THE GOLDEN SECRET|ANTONIO BANDERAS|Ámbar Amaderada
+DIMP0077|CLOUD|ARIANA GRANDE|Floral Frutal Gourmand
+DIMP0079|REM|ARIANA GRANDE|Ámbar Vainilla
+DIMP0101|SWEET LIKE CANDY|ARIANA GRANDE|Floral Frutal Gourmand
+DIMP0078|THANK U NEXT|ARIANA GRANDE|Floral Frutal Gourmand
+UIMP0051|CLUB DE NUIT (UNISEX)|ARMAF|Amaderada Aromática
+UIMP0023|CLUB DE NUIT INTENSE|ARMAF|Amaderada Aromática
+UIMP0025|CLUB DE NUIT UNTOLD|ARMAF|Amaderada Especiada
+UIMP0007|HONOR AND GLORY|ARMAF|Frutal Amaderada
+UIMP0052|ILMIN SATIVA|ARMAF|Amaderada Especiada
+UIMP0024|KING|ARMAF|Aromática Frutal
+UIMP0015|STARRY NIGHTS|ARMAF|Ámbar Especiada
+UIMP0054|ARRURRU NATURALS|ARRURRU|Floral Suave
+CIMP0129|ARSENAL BLUE|ARSENAL|Aromática Acuática
+CIMP0053|AZZARO MEN|AZZARO|Aromática Fougère
+CIMP0054|CLUB DE NUIT (MEN)|AZZARO|Aromática Fougère
+DIMP0096|PINK CHIFFON|BATH & BODY WORKS|Floral Frutal
+UIMP0034|BHARARA KING|BHARARA|Aromática Frutal
+UIMP0035|BHARARA NICHE|BHARARA|Oriental Vainilla
+UIMP0046|BLEECKER STREET|BOND NO. 9|Ámbar Amaderada
+UIMP0036|BOND SIGNATURE|BOND NO. 9|Floral Amaderada
+UIMP0050|BOND SIGNATURE (UNISEX)|BOND NO. 9|Floral Amaderada
+DIMP0068|FANTASY|BRITNEY SPEARS|Floral Frutal Gourmand
+DIMP0067|FANTASY MIDNIGHT|BRITNEY SPEARS|Ámbar Floral
+DIMP0055|BURBERRY (FEM)|BURBERRY|Floral Frutal Gourmand
+CIMP0067|BVLGARI AQVA|BVLGARI|Aromática Acuática
+CIMP0068|BVLGARI MAN IN BLACK|BVLGARI|Ámbar Floral
+DIMP0020|OMNIA AMETHYST|BVLGARI|Floral Frutal
+DIMP0021|OMNIA CORAL|BVLGARI|Floral Frutal
+DIMP0022|OMNIA CRYSTALLINE|BVLGARI|Floral Acuática
+DIMP0105|AMOR AMOR|CACHAREL|Floral Frutal
+DIMP0092|ANAÏS ANAÏS|CACHAREL|Floral
+DIMP0023|CK IN2U (FEM)|CALVIN KLEIN|Floral Frutal
+DIMP0054|CK IN2U (FEM)|CALVIN KLEIN|Floral Frutal
+UIMP0001|CK ONE|CALVIN KLEIN|Cítrica Aromática
+CIMP0101|ETERNITY FOR MEN|CALVIN KLEIN|Aromática Fougère
+CIMP0025|212 HEROES|CAROLINA HERRERA|Aromática Fougère
+DIMP0006|212 HEROES FOREVER YOUNG|CAROLINA HERRERA|Floral Frutal
+CIMP0028|212 MEN|CAROLINA HERRERA|Almizcle Floral Amaderado
+CIMP0023|212 MEN NYC|CAROLINA HERRERA|Amaderada Aromática
+CIMP0019|212 MEN PARTY FEVER|CAROLINA HERRERA|Amaderada Especiada
+CIMP0027|212 MEN WILD PARTY|CAROLINA HERRERA|Aromática Fougère
+DIMP0003|212 NYC (FEM)|CAROLINA HERRERA|Almizcle Floral Amaderado
+DIMP0005|212 SEXY (FEM)|CAROLINA HERRERA|Ámbar Floral
+CIMP0018|212 SEXY MEN|CAROLINA HERRERA|Ámbar Fougère
+DIMP0004|212 VIP (FEM)|CAROLINA HERRERA|Ámbar Vainilla
+CIMP0017|212 VIP BLACK|CAROLINA HERRERA|Aromática Fougère
+CIMP0020|212 VIP BLACK RED|CAROLINA HERRERA|Amaderada Especiada
+CIMP0022|212 VIP MEN|CAROLINA HERRERA|Ámbar Amaderada
+DIMP0001|212 VIP ROSÉ|CAROLINA HERRERA|Floral Frutal
+CIMP0021|212 VIP WINS|CAROLINA HERRERA|Aromática Fougère
+DIMP0002|212 WILD PARTY (FEM)|CAROLINA HERRERA|Floral Frutal
+CIMP0024|BAD BOY|CAROLINA HERRERA|Ámbar Especiada
+DIMP0008|CH (FEM)|CAROLINA HERRERA|Ámbar Floral
+CIMP0026|CH MEN|CAROLINA HERRERA|Ámbar Especiada
+DIMP0007|CH SUBLIME|CAROLINA HERRERA|Floral Amaderada
+DIMP0038|GOOD GIRL|CAROLINA HERRERA|Floral Frutal Gourmand
+DIMP0039|GOOD GIRL LÉGÈRE|CAROLINA HERRERA|Floral Frutal
+DIMP0089|GOOD GIRL LÉGÈRE (CH)|CAROLINA HERRERA|Floral Frutal
+DIMP0063|VERY GOOD GIRL|CAROLINA HERRERA|Floral Frutal
+CIMP0097|DECLARATION|CARTIER|Aromática Fougère
+CIMP0096|EAU DE CARTIER|CARTIER|Cítrica Aromática
+CIMP0077|ALLURE HOMME|CHANEL|Ámbar Amaderada
+CIMP0076|BLEU DE CHANEL|CHANEL|Amaderada Aromática
+DIMP0028|CHANCE CHANEL|CHANEL|Chipre Floral
+DIMP0029|CHANCE EAU TENDRE|CHANEL|Floral Frutal
+DIMP0027|CHANEL NO. 5|CHANEL|Floral Aldehídica
+DIMP0030|COCO MADEMOISELLE|CHANEL|Ámbar Floral
+CIMP0100|HAPPY FOR MEN|CLINIQUE|Cítrica Aromática
+CIMP0070|AVENTUS|CREED|Chipre Frutal
+UIMP0002|CREED IMPERIAL|CREED|Cítrica Almizcle
+CIMP0108|SILVER MOUNTAIN WATER|CREED|Aromática Acuática
+CIMP0112|CR7 (MEN)|CRISTIANO RONALDO|Aromática Fougère
+CIMP0113|LEGACY CR7|CRISTIANO RONALDO|Amaderada Aromática
+CIMP0088|COOL WATER (MEN)|DAVIDOFF|Aromática Acuática
+UIMP0039|AHLI KARPOS|DESCONOCIDO|Amaderada Especiada
+CIMP0119|AROM|DESCONOCIDO|Aromática
+CIMP0121|HIS CONFESSION|DESCONOCIDO|Oriental Amaderada
+CIMP0120|OHM|DESCONOCIDO|Aromática Fougère
+CIMP0046|DIESEL BAD|DIESEL|Aromática Especiada
+CIMP0045|DIESEL PLUS PLUS|DIESEL|Aromática Fougère
+DIMP0010|DIESEL ZERO PLUS (FEM)|DIESEL|Floral Frutal
+CIMP0044|ONLY THE BRAVE TATTOO|DIESEL|Aromática Fougère
+CIMP0062|DIOR HOMME|DIOR|Amaderada Aromática
+CIMP0060|FAHRENHEIT|DIOR|Aromática Fougère
+DIMP0017|J'ADORE|DIOR|Floral
+DIMP0016|MISS DIOR BLOOMING BOUQUET|DIOR|Floral Frutal
+CIMP0061|SAUVAGE|DIOR|Ámbar Fougère
+UIMP0057|DISNEY BLUE|DISNEY|Aromática Fresca
+UIMP0056|DISNEY PIXAR|DISNEY|Aromática Fresca
+UIMP0053|FROZEN DISNEY|DISNEY|Floral Frutal
+UIMP0055|PRINCESS DISNEY|DISNEY|Floral Frutal
+DIMP0025|DEVOTION D&G|DOLCE & GABBANA|Ámbar Vainilla
+CIMP0073|DOLCE & GABBANA MEN|DOLCE & GABBANA|Aromática Fougère
+CIMP0122|K BY DOLCE & GABBANA|DOLCE & GABBANA|Amaderada Aromática
+DIMP0107|L'IMPÉRATRICE|DOLCE & GABBANA|Floral Frutal
+DIMP0064|LIGHT BLUE (FEM)|DOLCE & GABBANA|Floral Frutal
+CIMP0123|LIGHT BLUE (MEN)|DOLCE & GABBANA|Aromática Acuática
+DIMP0024|THE ONE (FEM)|DOLCE & GABBANA|Ámbar Floral
+CIMP0072|THE ONE (MEN)|DOLCE & GABBANA|Amaderada Especiada
+DIMP0091|DKNY BE DELICIOUS|DONNA KARAN|Floral Frutal
+CIMP0109|STRONGER WITH YOU|EMPORIO ARMANI|Aromática Fougère
+DIMP0058|CHERRY IN THE AIR|ESCADA|Floral Frutal
+DIMP0057|ESCADA MOON SPARKLE|ESCADA|Floral Frutal
+DIMP0060|JUICED BERRY|ESCADA|Floral Frutal
+DIMP0083|ROCKIN RIO ESCADA|ESCADA|Floral Frutal
+DIMP0084|SORBETTO ROSSO ESCADA|ESCADA|Floral Frutal
+DIMP0059|TAJ SUNSET|ESCADA|Floral Frutal
+CIMP0071|FERRARI BLACK|FERRARI|Aromática Fougère
+UIMP0009|AMBER ROUGE|FRAGRANCE WORLD|Amaderada Especiada
+UIMP0020|ARABIANS|FRAGRANCE WORLD|Ámbar Oriental
+UIMP0014|ARABIANS TONKA|FRAGRANCE WORLD|Ámbar Vainilla
+DIMP0102|9 AM (FEM)|FRANCK OLIVIER|Cítrica Floral
+DIMP0095|273 BEVERLY HILLS|FRED HAYMAN|Floral Amaderada
+CIMP0084|ACQUA DI GIÒ|GIORGIO ARMANI|Aromática Acuática
+CIMP0085|ACQUA DI GIÒ PROFUMO|GIORGIO ARMANI|Aromática Acuática
+CIMP0083|ARMANI BLACK CODE|GIORGIO ARMANI|Amaderada Aromática
+DIMP0036|SÌ ARMANI|GIORGIO ARMANI|Chipre Frutal
+DIMP0037|ACQUA DI GIOIA|GIORGIO ARMANI|Floral Acuática
+DIMP0093|ANGE OU DEMON|GIVENCHY|Ámbar Floral
+CIMP0080|GIVENCHY BLUE (MEN)|GIVENCHY|Amaderada Especiada
+CIMP0079|GIVENCHY BLUE LABEL|GIVENCHY|Amaderada Especiada
+CIMP0078|GIVENCHY POUR HOMME|GIVENCHY|Aromática Fougère
+CIMP0087|GUCCI GUILTY (MEN)|GUCCI|Aromática Fougère
+CIMP0086|GUCCI POUR HOMME|GUCCI|Amaderada Chipre
+CIMP0118|GUESS (MEN)|GUESS|Aromática Fougère
+DIMP0052|GUESS FEM|GUESS|Floral Frutal
+CIMP0030|BOSS BOTTLED|HUGO BOSS|Amaderada Especiada
+CIMP0034|BOSS BOTTLED NIGHT|HUGO BOSS|Amaderada Aromática
+CIMP0031|BOSS BOTTLED UNLIMITED|HUGO BOSS|Aromática Fougère
+CIMP0039|BOSS IN MOTION|HUGO BOSS|Aromática Fougère
+CIMP0032|BOSS INTENSE|HUGO BOSS|Amaderada Especiada
+CIMP0033|BOSS ORANGE (MEN)|HUGO BOSS|Amaderada Especiada
+CIMP0035|HUGO (MEN)|HUGO BOSS|Ámbar Especiada
+CIMP0037|HUGO DARK BLUE|HUGO BOSS|Oriental Amaderada
+CIMP0038|HUGO DIFFERENT|HUGO BOSS|Aromática Verde
+CIMP0029|HUGO ENERGISE|HUGO BOSS|Aromática Verde
+CIMP0040|HUGO ENERGIZED|HUGO BOSS|Amaderada Aromática
+CIMP0036|HUGO RED|HUGO BOSS|Aromática Fougère
+CIMP0131|HUGO THE SCENT|HUGO BOSS|Aromática Especiada
+DIMP0009|HUGO WOMAN|HUGO BOSS|Ámbar Floral
+UIMP0022|OUD FOR GREATNESS|INITIO PARFUMS PRIVÉS|Oriental Amaderada
+DIMP0026|ISSEY MIYAKE (FEM)|ISSEY MIYAKE|Floral Acuática
+CIMP0075|ISSEY MIYAKE (MEN)|ISSEY MIYAKE|Aromática Fougère
+CIMP0041|LE MÂLE|JEAN PAUL GAULTIER|Aromática Fougère
+CIMP0043|LE MÂLE ELIXIR|JEAN PAUL GAULTIER|Amaderada Aromática
+DIMP0046|SCANDAL (FEM)|JEAN PAUL GAULTIER|Chipre Floral
+CIMP0115|SCANDAL POUR HOMME|JEAN PAUL GAULTIER|Ámbar Amaderada
+CIMP0132|ULTRA LE MÂLE|JEAN PAUL GAULTIER|Ámbar Fougère
+CIMP0042|ULTRA MÂLE|JEAN PAUL GAULTIER|Ámbar Fougère
+DIMP0073|HALLOWEEN|JESUS DEL POZO|Oriental Floral
+DIMP0090|VIVA LA JUICY|JUICY COUTURE|Floral Frutal Gourmand
+DIMP0074|MEOW|KATY PERRY|Floral Frutal Gourmand
+DIMP0085|FLOWER BY KENZO|KENZO|Floral
+DIMP0086|BFF KKW|KIM KARDASHIAN|Floral Frutal Gourmand
+CIMP0048|LACOSTE ENERGIZED|LACOSTE|Cítrica Aromática
+CIMP0047|LACOSTE ESSENTIAL|LACOSTE|Amaderada Especiada
+DIMP0012|LACOSTE NATURAL|LACOSTE|Floral Frutal
+DIMP0066|LACOSTE NATURAL (FEM)|LACOSTE|Floral Frutal
+CIMP0049|LACOSTE NOIR|LACOSTE|Amaderada Aromática
+CIMP0051|LACOSTE RED|LACOSTE|Aromática Fougère
+DIMP0011|LACOSTE SPARKLING|LACOSTE|Floral Frutal
+CIMP0050|LACOSTE WHITE|LACOSTE|Ámbar Fougère
+DIMP0065|TOUCH OF PINK|LACOSTE|Floral Frutal
+DIMP0076|MAD ABOUT YOU|LANCOME|Floral Frutal
+DIMP0100|LA VIDA ES BELLA|LANCÔME|Floral Oriental
+CIMP0090|LAPIDUS POUR HOMME|LAPIDUS|Aromática Fougère
+UIMP0028|AHLIL VEGA|LATTAFA|Floral Amaderada
+UIMP0031|AMETHYST LATTAFA|LATTAFA|Ámbar Vainilla
+UIMP0013|ASAD|LATTAFA|Oriental
+UIMP0037|ASAD ZANZIBAR|LATTAFA|Oriental Especiada
+UIMP0027|HAYA LATTAFA|LATTAFA|Floral Frutal
+UIMP0008|KHAMRAH|LATTAFA|Ámbar Especiada
+UIMP0029|NOBLE BLUSH LATTAFA|LATTAFA|Floral Amaderada
+UIMP0048|OUD FOR GLORY|LATTAFA|Oriental Amaderada
+UIMP0030|OUD FOR GLORY LATTAFA|LATTAFA|Oriental Amaderada
+UIMP0016|ROSES MUSK|LATTAFA|Floral Almizcle
+UIMP0033|SHAHEEN GOLD LATTAFA|LATTAFA|Oriental Floral
+UIMP0010|VELVET GOLD|LATTAFA|Floral Amaderada
+UIMP0012|YARA|LATTAFA|Ámbar Vainilla
+UIMP0011|SANTAL 33|LE LABO|Amaderada Aromática
+CIMP0092|LOEWE 7|LOEWE|Amaderada Especiada
+CIMP0091|SOLO LOEWE|LOEWE|Ámbar Aromática
+CIMP0125|L'IMMENSITE|LOUIS VUITTON|Ámbar Especiada
+CIMP0124|OMBRE NOMADE|LOUIS VUITTON|Ámbar Amaderada
+UIMP0005|BACCARAT ROUGE 540|MAISON FRANCIS KURKDJIAN|Ámbar Floral
+CIMP0126|MERCEDES-BENZ CLUB|MERCEDES-BENZ|Amaderada Aromática
+CIMP0063|STARWALKER|MONT BLANC|Amaderada Especiada
+UIMP0019|INTENSE CAFÉ|MONTALE|Oriental Vainilla
+CIMP0057|EMBLEM|MONTBLANC|Ámbar Especiada
+CIMP0058|EXPLORER|MONTBLANC|Amaderada Aromática
+DIMP0075|GOLD RUSH (FEM)|MONTBLANC|Floral Frutal
+CIMP0117|GOLD RUSH (MEN)|MONTBLANC|Ámbar Fougère
+CIMP0056|LEGEND|MONTBLANC|Ámbar Aromática
+CIMP0055|LEGEND SPIRIT|MONTBLANC|Amaderada Aromática
+CIMP0111|MANDARIN SKY|MONTBLANC|Cítrica Aromática
+DIMP0103|MOD VAINILLA|MONTBLANC|Ámbar Vainilla
+CIMP0114|WINNER SPORT|MONTBLANC|Aromática Fougère
+DIMP0087|LOVE LOVE MOSCHINO|MOSCHINO|Floral Frutal Gourmand
+DIMP0070|MOSCHINO FUNNY!|MOSCHINO|Floral Frutal
+DIMP0071|TOY 2|MOSCHINO|Floral Amaderada
+DIMP0069|TOY 2 BUBBLE GUM|MOSCHINO|Floral Frutal
+DIMP0094|TOY 2 PEARL|MOSCHINO|Floral Frutal
+CIMP0059|TOY BOY|MOSCHINO|Amaderada Especiada
+CIMP0074|NAUTICA VOYAGE|NAUTICA|Amaderada Chipre
+UIMP0032|AZURE FANTASY ORIENTICA|ORIENTICA|Amaderada Acuática
+DIMP0043|OSADIA (FEM)|OSCAR DE LA RENTA|Floral Amaderada
+DIMP0108|OSADIA (FEM)|OSCAR DE LA RENTA|Floral Amaderada
+CIMP0093|OSADIA (MEN)|OSCAR DE LA RENTA|Aromática Fougère
+CIMP0011|BLACK XS|PACO RABANNE|Cuero
+DIMP0049|BLACK XS (FEM)|PACO RABANNE|Almizcle Floral Amaderado
+CIMP0012|BLACK XS L'APHRODISIAQUE|PACO RABANNE|Cuero
+CIMP0013|BLACK XS L'EXCÈS|PACO RABANNE|Amaderada Especiada
+DIMP0050|FAME|PACO RABANNE|Almizcle Floral Amaderado
+CIMP0008|INVICTUS INTENSE|PACO RABANNE|Aromática Acuática
+CIMP0007|INVICTUS LEGEND|PACO RABANNE|Aromática Acuática
+CIMP0010|INVICTUS MEN|PACO RABANNE|Amaderada Acuática
+CIMP0006|INVICTUS ONYX|PACO RABANNE|Aromática Acuática
+CIMP0009|INVICTUS VICTORY|PACO RABANNE|Aromática Acuática
+DIMP0044|LADY MILLION|PACO RABANNE|Ámbar Floral
+DIMP0045|LADY MILLION LUCKY|PACO RABANNE|Floral Frutal
+DIMP0047|OLYMPÉA|PACO RABANNE|Ámbar Floral
+DIMP0048|OLYMPÉA AQUA|PACO RABANNE|Floral Acuática
+CIMP0001|ONE MILLION|PACO RABANNE|Amaderada Especiada
+CIMP0005|ONE MILLION ELIXIR|PACO RABANNE|Amaderada Aromática
+CIMP0002|ONE MILLION INTENSE|PACO RABANNE|Amaderada Especiada
+CIMP0004|ONE MILLION LUCKY|PACO RABANNE|Amaderada
+CIMP0003|ONE MILLION PRIVÉ|PACO RABANNE|Amaderada
+CIMP0016|PACO DE RABANNE (MEN)|PACO RABANNE|Aromática Fougère
+CIMP0014|PHANTOM|PACO RABANNE|Amaderada Aromática
+CIMP0015|PURE XS|PACO RABANNE|Oriental Especiada
+UIMP0018|DELINA|PARFUMS DE MARLY|Chipre Frutal
+DIMP0034|CAN CAN|PARIS HILTON|Floral Frutal
+DIMP0035|DAZZLE|PARIS HILTON|Floral Frutal
+DIMP0033|HEIRESS|PARIS HILTON|Floral Frutal Gourmand
+DIMP0031|PARIS HILTON FEM|PARIS HILTON|Floral Frutal
+CIMP0081|PARIS HILTON MEN|PARIS HILTON|Amaderada Aromática
+DIMP0032|PASSPORT IN PARIS|PARIS HILTON|Floral Frutal
+DIMP0053|360° (FEM)|PERRY ELLIS|Floral
+CIMP0098|360° (MEN)|PERRY ELLIS|Aromática Fougère
+CIMP0099|360° RED (MEN)|PERRY ELLIS|Ámbar Especiada
+DIMP0106|PRADA CANDY|PRADA|Ámbar Vainilla
+CIMP0064|POLO BLUE|RALPH LAUREN|Aromática Fougère
+CIMP0065|POLO RED|RALPH LAUREN|Amaderada Especiada
+CIMP0066|POLO SPORT|RALPH LAUREN|Aromática Verde
+DIMP0018|RALPH (FEM)|RALPH LAUREN|Floral Frutal
+DIMP0072|SELENA GOMEZ (FRAGRANCE)|SELENA GOMEZ|Floral Frutal
+DIMP0080|SOFIA|SOFIA VERGARA|Floral Frutal
+DIMP0042|SWISS ARMY (FEM)|SWISS ARMY|Floral Frutal
+CIMP0089|SWISS ARMY (MEN)|SWISS ARMY|Aromática Fougère
+DIMP0104|GAIA|THE BODY SHOP|Floral Amaderada
+CIMP0128|NOIR BY TOM FORD|TOM FORD|Amaderada Especiada
+CIMP0130|OMBRE LEATHER|TOM FORD|Cuero
+CIMP0069|TOMMY (MEN)|TOMMY HILFIGER|Cítrica Aromática
+DIMP0019|TOMMY GIRL|TOMMY HILFIGER|Floral Frutal
+DIMP0098|YARA MOI|TOUS|Floral Frutal
+DIMP0099|YARA TOUS|TOUS|Floral Frutal
+CIMP0082|VALENTINO UOMO|VALENTINO|Amaderada Aromática
+CIMP0052|BLUE JEANS|VERSACE|Aromática Fougère
+DIMP0014|BRIGHT CRYSTAL|VERSACE|Floral Frutal
+CIMP0107|DYLAN BLUE (MEN)|VERSACE|Aromática Fougère
+DIMP0013|EROS (FEM)|VERSACE|Floral Amaderado
+CIMP0106|EROS (MEN)|VERSACE|Ámbar Fougère
+DIMP0109|EROS (VERSACE FEM)|VERSACE|Floral Amaderado
+CIMP0105|EROS EAU FRAÎCHE|VERSACE|Aromática Acuática
+CIMP0104|EROS FLAME|VERSACE|Amaderada Especiada
+DIMP0015|YELLOW DIAMOND|VERSACE|Floral Frutal
+DIMP0061|BOMBSHELL|VICTORIA'S SECRET|Floral Frutal
+DIMP0062|COCONUT PASSION|VICTORIA'S SECRET|Floral Frutal Gourmand
+DIMP0082|KISS VS|VICTORIA'S SECRET|Floral Frutal
+DIMP0088|PURE SEDUCTION|VICTORIA'S SECRET|Floral Frutal
+DIMP0097|SEXY ANGEL|VICTORIA'S SECRET|Floral Frutal Gourmand
+DIMP0040|BONBON VIKTOR&ROLF|VIKTOR & ROLF|Floral Frutal Gourmand
+DIMP0041|FLOWERBOMB|VIKTOR & ROLF|Floral Frutal Gourmand
+CIMP0102|SPICEBOMB|VIKTOR & ROLF|Amaderada Especiada
+UIMP0026|ERBA PURA|XERJOFF|Ámbar Frutal
+UIMP0043|IL BLANC|XERJOFF|Floral Almizcle
+UIMP0044|IL DOLCE|XERJOFF|Floral Gourmand
+UIMP0042|IL EROTIQUE|XERJOFF|Oriental Floral
+UIMP0041|IL KAKUNO|XERJOFF|Amaderada Especiada
+UIMP0045|IL ORGASME|XERJOFF|Ámbar Floral
+UIMP0040|IL ROSO|XERJOFF|Oriental Amaderada
+UIMP0047|NAXOS DE XERJOFF|XERJOFF|Cítrica Gourmand
+DIMP0081|CCORI ROSE|YANBAL|Floral Frutal
+CIMP0094|ZLATAN IBRAHIMOVIC PARFUM|ZLATAN IBRAHIMOVIC PARFUMS|Aromática Fougère
+`;
 
+/* ═══════════════════════════════════════════════════════════
+   🔧 PARSEO + DERIVACIÓN DE SEGMENTO
+   ═══════════════════════════════════════════════════════════ */
+function segFromCode(code){
+  if (/^(D|DD|ITA-CF|ITA-AND)/.test(code)) return "Mujer";
+  if (/^(C|ITA-CM|ITA-AN)/.test(code))     return "Hombre";
+  return "Unisex";
+}
+
+const perfumes = RAW.trim().split("\n").filter(l=>l.trim()).map(line => {
+  const parts = line.split("|");
+  const codigo = (parts[0]||"").trim();
+  const nombre = (parts[1]||"").trim();
+  const marca  = (parts[2]||"").trim();
+  const familia= (parts[3]||"").trim();
+  return {codigo, c:nombre, d:marca, s:segFromCode(codigo), f:familia};
+});
+
+/* Elimina " DE MARCA" / " BY MARCA" del nombre para no duplicar */
+function cleanName(nombre, marca){
+  if (!marca) return nombre;
+  const b = marca.toUpperCase();
+  const n = nombre.toUpperCase();
+  for (const suf of [" DE " + b, " BY " + b]){
+    if (n.endsWith(suf)) return nombre.slice(0, -suf.length).trim();
+  }
+  return nombre;
+}
+
+/* Agrupación de familias para el filtro */
+const ARAB_BRANDS = new Set(["LATTAFA","LATTAFA PERFUMES","AL HARAMAIN","AL HARAMAIN PERFUMES","ARMAF","AFNAN","RASASI","KHADLAJ PERFUMES","ORIENTICA","NABEEL","BHARARA","KAJAL","GISSAH PERFUMES","SHAIK","ATTAR COLLECTION","AHLI","DUMONT","FRAGRANCE WORLD","YANBAL","ARD AL ZAAFARAN","MAISON CRIVELLI"]);
+const NICHE_BRANDS = new Set(["CREED","XERJOFF","MAISON FRANCIS KURKDJIAN","TOM FORD","PARFUMS DE MARLY","LE LABO","BYREDO","KILIAN","INITIO PARFUMS PRIVES","INITIO PARFUMS PRIVÉS","NISHANE","NASOMATTO","MEMO PARIS","BDK PARFUMS","EX NIHILO","FREDERIC MALLE","CLIVE CHRISTIAN","STÉPHANE HUMBERT LUCAS 777","STEPHANE HUMBERT LUCAS 777","ORTO PARISI","BOND NO. 9","BOND No. 9","AMOUAGE","PENHALIGON'S","PENHALIGONS","LORENZO PAZZAGLIA","GIARDINI DI TOSCANA","MONTALE","MANCERA","ESCENTRIC MOLECULES","COMMODITY","THOMAS KOSMALA","TIZIANA TERENZI","AKRO"]);
+
+function grupoOf(p){
+  const brand = (p.d||"").toUpperCase();
+  if (NICHE_BRANDS.has(brand)) return "Nicho";
+  if (ARAB_BRANDS.has(brand))  return "Árabe";
+  const f = (p.f||"").toLowerCase();
+  if (f.includes("vainilla") || f.includes("gourmand")) return "Dulce";
+  if (f.includes("oriental"))                            return "Oriental";
+  if (f === "ámbar" || f.includes("ámbar especiada"))    return "Oriental";
+  if (f.includes("amaderad") || f.includes("cuero") || f.includes("chipre")) return "Amaderado";
+  if (f.includes("cítrica") || f.includes("acuática") || f.includes("fougère") || f.includes("aromátic") || f.includes("verde")) return "Fresco";
+  if (f.includes("floral") || f.includes("aldehídica"))  return "Floral";
+  if (f.includes("almizcle"))                            return "Amaderado";
+  if (f.includes("frutal"))                              return "Floral";
+  if (f.includes("ámbar"))                               return "Amaderado";
+  return "Floral";
+}
+
+/* ═══════════════════════════════════════════════════════════
+   🎛️ ESTADO
+   ═══════════════════════════════════════════════════════════ */
 let currentSegment = "Todos";
 let currentFamily  = "Todas";
 let currentSort    = "catalog";
@@ -1003,16 +1697,16 @@ let filteredCache  = [];
 let searchTimer    = null;
 
 const SEGMENTS = ["Todos", "Mujer", "Hombre", "Unisex"];
-const FAMILIES = ["Todas", "Dulce", "Floral", "Fresco", "Amaderado", "Árabe", "Nicho"];
+const FAMILIES = ["Todas", "Dulce", "Floral", "Fresco", "Amaderado", "Oriental", "Árabe", "Nicho"];
 
 document.getElementById('totalCount').textContent = perfumes.length;
 
 /* SEGMENT TAGS */
 const segWrap = document.getElementById('segmentTags');
-SEGMENTS.forEach(s => {
-  const count = s === "Todos" ? perfumes.length : perfumes.filter(p => p.segmento === s).length;
+SEGMENTS.forEach(s=>{
+  const count = s === "Todos" ? perfumes.length : perfumes.filter(p=>p.s===s).length;
   const b = document.createElement('button');
-  b.type = 'button';
+  b.type='button';
   b.className = 'tag' + (s === "Todos" ? ' active' : '');
   b.dataset.segment = s;
   b.setAttribute('aria-pressed', s === "Todos");
@@ -1023,10 +1717,10 @@ SEGMENTS.forEach(s => {
 
 /* FAMILY TAGS */
 const famWrap = document.getElementById('familyTags');
-FAMILIES.forEach(f => {
-  const count = f === "Todas" ? perfumes.length : perfumes.filter(p => p.familia === f).length;
+FAMILIES.forEach(f=>{
+  const count = f === "Todas" ? perfumes.length : perfumes.filter(p=>grupoOf(p)===f).length;
   const b = document.createElement('button');
-  b.type = 'button';
+  b.type='button';
   b.className = 'tag' + (f === "Todas" ? ' active' : '');
   b.dataset.family = f;
   b.setAttribute('aria-pressed', f === "Todas");
@@ -1036,92 +1730,68 @@ FAMILIES.forEach(f => {
 });
 
 /* DESIGNER SELECT */
-const designers = [...new Set(perfumes.map(p => p.disenador))]
-  .sort((a,b) => a.localeCompare(b, 'es'));
+const designers = [...new Set(perfumes.map(p=>p.d))].sort((a,b)=>a.localeCompare(b,'es'));
 const sel = document.getElementById('designer');
-sel.innerHTML = '<option value="Todos">Todos los diseñadores</option>' +
-  designers.map(d => `<option value="${d}">${d}</option>`).join('');
+sel.innerHTML = '<option value="Todos">Todas las marcas</option>' +
+  designers.map(d=>`<option value="${d.replace(/"/g,'&quot;')}">${d}</option>`).join('');
 document.getElementById('designerCount').textContent = designers.length + ' casas';
 
-/* FILTROS */
-function setSegment(btn) {
-  document.querySelectorAll('[data-segment]').forEach(b => {
-    b.classList.remove('active');
-    b.setAttribute('aria-pressed', 'false');
-  });
-  btn.classList.add('active');
-  btn.setAttribute('aria-pressed', 'true');
-  currentSegment = btn.dataset.segment;
-  render();
+/* ═══════════════════════════════════════════════════════════
+   🎛️ FILTROS
+   ═══════════════════════════════════════════════════════════ */
+function setSegment(btn){
+  document.querySelectorAll('[data-segment]').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false');});
+  btn.classList.add('active');btn.setAttribute('aria-pressed','true');
+  currentSegment = btn.dataset.segment;render();
 }
-function setFamily(btn) {
-  document.querySelectorAll('[data-family]').forEach(b => {
-    b.classList.remove('active');
-    b.setAttribute('aria-pressed', 'false');
-  });
-  btn.classList.add('active');
-  btn.setAttribute('aria-pressed', 'true');
-  currentFamily = btn.dataset.family;
-  render();
+function setFamily(btn){
+  document.querySelectorAll('[data-family]').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false');});
+  btn.classList.add('active');btn.setAttribute('aria-pressed','true');
+  currentFamily = btn.dataset.family;render();
 }
-function setSort(v) { currentSort = v; render(); }
+function setSort(v){ currentSort = v; render(); }
+function clearSearch(){ document.getElementById('search').value = ''; render(); }
+function onSearch(){ clearTimeout(searchTimer); searchTimer = setTimeout(render, 150); }
 
-function clearSearch() {
-  document.getElementById('search').value = '';
-  render();
-}
-function onSearch() {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(render, 150);
-}
-
-function resetAll() {
-  currentSegment = "Todos";
-  currentFamily  = "Todas";
-  currentSort    = "catalog";
-  document.querySelectorAll('[data-segment]').forEach(b => {
-    const on = b.dataset.segment === "Todos";
-    b.classList.toggle('active', on);
-    b.setAttribute('aria-pressed', on);
-  });
-  document.querySelectorAll('[data-family]').forEach(b => {
-    const on = b.dataset.family === "Todas";
-    b.classList.toggle('active', on);
-    b.setAttribute('aria-pressed', on);
-  });
+function resetAll(){
+  currentSegment = "Todos"; currentFamily = "Todas"; currentSort = "catalog";
+  document.querySelectorAll('[data-segment]').forEach(b=>{const on=b.dataset.segment==="Todos";b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
+  document.querySelectorAll('[data-family]').forEach(b=>{const on=b.dataset.family==="Todas";b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
   document.getElementById('search').value = '';
   document.getElementById('designer').value = 'Todos';
   document.getElementById('sort').value = 'catalog';
   render();
 }
 
-/* FILTRADO + ORDEN */
-function getFiltered() {
+function getFiltered(){
   const q = document.getElementById('search').value.toLowerCase().trim();
   const d = document.getElementById('designer').value;
-  return perfumes.filter(p => {
-    if (currentSegment !== "Todos" && p.segmento !== currentSegment) return false;
-    if (currentFamily  !== "Todas" && p.familia  !== currentFamily)  return false;
-    if (d !== "Todos" && p.disenador !== d) return false;
-    if (q) {
-      const hay = (p.completo + ' ' + p.disenador + ' ' + p.familia + ' ' + p.segmento).toLowerCase();
+  return perfumes.filter(p=>{
+    if (currentSegment !== "Todos" && p.s !== currentSegment) return false;
+    if (currentFamily  !== "Todas" && grupoOf(p) !== currentFamily) return false;
+    if (d !== "Todos" && p.d !== d) return false;
+    if (q){
+      const hay = (p.c + ' ' + p.d + ' ' + p.f + ' ' + p.s).toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
   });
 }
-function getSorted(list) {
+function getSorted(list){
   const arr = [...list];
-  switch (currentSort) {
-    case 'az':       return arr.sort((a,b) => a.completo.localeCompare(b.completo, 'es'));
-    case 'za':       return arr.sort((a,b) => b.completo.localeCompare(a.completo, 'es'));
-    case 'designer': return arr.sort((a,b) => a.disenador.localeCompare(b.disenador, 'es') || a.completo.localeCompare(b.completo, 'es'));
+  switch (currentSort){
+    case 'az':       return arr.sort((a,b)=>a.c.localeCompare(b.c,'es'));
+    case 'za':       return arr.sort((a,b)=>b.c.localeCompare(a.c,'es'));
+    case 'designer': return arr.sort((a,b)=>a.d.localeCompare(b.d,'es') || a.c.localeCompare(b.c,'es'));
     default:         return arr;
   }
 }
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
 /* RENDER */
-function render() {
+function render(){
   const filtered = getSorted(getFiltered());
   filteredCache = filtered;
 
@@ -1139,156 +1809,128 @@ function render() {
   const grid  = document.getElementById('grid');
   const empty = document.getElementById('empty');
 
-  if (filtered.length === 0) {
-    grid.innerHTML = '';
-    grid.style.display = 'none';
-    empty.style.display = 'block';
-    return;
+  if (filtered.length === 0){
+    grid.innerHTML = ''; grid.style.display = 'none'; empty.style.display = 'block'; return;
   }
   empty.style.display = 'none';
   grid.style.display = 'grid';
 
   grid.innerHTML = filtered.map((p, i) => {
     const idx = String(i + 1).padStart(3, '0');
-    const segClass = p.segmento === 'Mujer'  ? 'badge--orange'
-                   : p.segmento === 'Hombre' ? 'badge--bone'
-                   : 'badge--orange';
+    const segClass = p.s === 'Mujer' ? 'badge--orange' : p.s === 'Hombre' ? 'badge--bone' : 'badge--orange';
+    const nombreLimpio = cleanName(p.c, p.d);
     return `
       <div class="card">
         <div class="card__strip">
           <span class="card__idx">${idx}</span>
-          <span class="card__fam">${p.familia}</span>
+          <span class="card__fam">${escapeHtml(p.f)}</span>
         </div>
-        <h3 class="card__name">${p.completo}</h3>
+        <h3 class="card__name">${escapeHtml(nombreLimpio)}</h3>
         <div class="card__meta">
-          <span class="badge">${p.disenador}</span>
-          <span class="badge ${segClass}">${p.segmento}</span>
+          <span class="badge">${escapeHtml(p.d)}</span>
+          <span class="badge ${segClass}">${p.s}</span>
         </div>
-      </div>
-    `;
+      </div>`;
   }).join('');
 }
 
-function renderChips() {
+function renderChips(){
   const wrap = document.getElementById('activeChips');
   const items = [];
-  if (currentSegment !== 'Todos') items.push({ label: currentSegment, action: () => resetChip('segment') });
-  if (currentFamily  !== 'Todas') items.push({ label: currentFamily,  action: () => resetChip('family')  });
+  if (currentSegment !== 'Todos') items.push({label:currentSegment, action:()=>resetChip('segment')});
+  if (currentFamily  !== 'Todas') items.push({label:currentFamily,  action:()=>resetChip('family')});
   const d = document.getElementById('designer').value;
-  if (d !== 'Todos')               items.push({ label: d,             action: () => resetChip('designer') });
+  if (d !== 'Todos') items.push({label:d, action:()=>resetChip('designer')});
   const q = document.getElementById('search').value.trim();
-  if (q)                           items.push({ label: `"${q}"`,     action: () => resetChip('search')  });
+  if (q) items.push({label:`"${q}"`, action:()=>resetChip('search')});
 
-  if (items.length === 0) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  if (items.length === 0){ wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
   wrap.style.display = 'flex';
-  wrap.innerHTML = items.map((it, i) =>
-    `<span class="chip">${it.label}<button data-chip="${i}" aria-label="Quitar filtro">×</button></span>`
+  wrap.innerHTML = items.map((it,i)=>
+    `<span class="chip">${escapeHtml(it.label)}<button data-chip="${i}" aria-label="Quitar filtro">×</button></span>`
   ).join('');
-  wrap.querySelectorAll('button[data-chip]').forEach(btn => {
+  wrap.querySelectorAll('button[data-chip]').forEach(btn=>{
     btn.onclick = items[+btn.dataset.chip].action;
   });
 }
-
-function resetChip(type) {
-  if (type === 'segment') {
+function resetChip(type){
+  if (type === 'segment'){
     currentSegment = 'Todos';
-    document.querySelectorAll('[data-segment]').forEach(b => {
-      const on = b.dataset.segment === 'Todos';
-      b.classList.toggle('active', on);
-      b.setAttribute('aria-pressed', on);
-    });
-  } else if (type === 'family') {
+    document.querySelectorAll('[data-segment]').forEach(b=>{const on=b.dataset.segment==='Todos';b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
+  } else if (type === 'family'){
     currentFamily = 'Todas';
-    document.querySelectorAll('[data-family]').forEach(b => {
-      const on = b.dataset.family === 'Todas';
-      b.classList.toggle('active', on);
-      b.setAttribute('aria-pressed', on);
-    });
-  } else if (type === 'designer') {
-    document.getElementById('designer').value = 'Todos';
-  } else if (type === 'search') {
-    document.getElementById('search').value = '';
-  }
+    document.querySelectorAll('[data-family]').forEach(b=>{const on=b.dataset.family==='Todas';b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
+  } else if (type === 'designer'){ document.getElementById('designer').value = 'Todos';
+  } else if (type === 'search'){ document.getElementById('search').value = ''; }
   render();
 }
 
 /* TOAST */
 let toastTimer = null;
-function showToast(msg) {
+function showToast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
 }
 
 /* COPIAR */
-function copyList() {
-  if (filteredCache.length === 0) { showToast('No hay perfumes para copiar'); return; }
-  const text = filteredCache.map((p, i) => `${i + 1}. ${p.completo}`).join('\n');
+function copyList(){
+  if (filteredCache.length === 0){ showToast('No hay perfumes para copiar'); return; }
+  const text = filteredCache.map((p,i)=>`${i+1}. ${cleanName(p.c,p.d)} — ${p.d}`).join('\n');
   const done = () => showToast(`✓ ${filteredCache.length} perfumes copiados`);
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
-  } else {
-    fallbackCopy(text, done);
-  }
+  if (navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text, done));
+  } else { fallbackCopy(text, done); }
 }
-function fallbackCopy(text, cb) {
+function fallbackCopy(text, cb){
   const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.opacity = '0';
-  document.body.appendChild(ta);
-  ta.select();
-  try { document.execCommand('copy'); cb(); }
-  catch (e) { showToast('No se pudo copiar'); }
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); cb(); } catch(e){ showToast('No se pudo copiar'); }
   document.body.removeChild(ta);
 }
 
 /* PDF */
-function exportPDF() {
-  if (filteredCache.length === 0) { showToast('No hay perfumes para exportar'); return; }
+function exportPDF(){
+  if (filteredCache.length === 0){ showToast('No hay perfumes para exportar'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   const now = new Date().toLocaleDateString('es-MX');
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
+  doc.setFont('helvetica','bold'); doc.setFontSize(16);
   doc.text('AION PERFUMERIA - Catalogo', 14, 20);
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10);
   doc.text(`Fecha: ${now}  |  Mostrando ${filteredCache.length} de ${perfumes.length} perfumes`, 14, 28);
 
   const filters = [];
   if (currentSegment !== 'Todos') filters.push(`Segmento: ${currentSegment}`);
   if (currentFamily  !== 'Todas') filters.push(`Familia: ${currentFamily}`);
   const dSel = document.getElementById('designer').value;
-  if (dSel !== 'Todos') filters.push(`Disenador: ${dSel}`);
+  if (dSel !== 'Todos') filters.push(`Marca: ${dSel}`);
   const qNow = document.getElementById('search').value.trim();
   if (qNow) filters.push(`Busqueda: "${qNow}"`);
-  if (filters.length) {
-    doc.setFontSize(8);
-    doc.setTextColor(120);
+  if (filters.length){
+    doc.setFontSize(8); doc.setTextColor(120);
     doc.text('Filtros: ' + filters.join('  ·  '), 14, 34);
     doc.setTextColor(0);
   }
 
   let y = 44;
   doc.setFontSize(9);
-  filteredCache.forEach((p, i) => {
-    const line = `${i + 1}. ${p.completo} | ${p.disenador} | ${p.segmento} | ${p.familia}`;
+  filteredCache.forEach((p,i)=>{
+    const line = `${i+1}. ${cleanName(p.c,p.d)} | ${p.d} | ${p.s} | ${p.f}`;
     const wrapped = doc.splitTextToSize(line, 182);
     const needed = wrapped.length * 5 + 1;
-    if (y + needed > 275) { doc.addPage(); y = 20; }
+    if (y + needed > 275){ doc.addPage(); y = 20; }
     doc.text(wrapped, 14, y);
     y += needed;
   });
 
   y += 8;
-  if (y > 250) { doc.addPage(); y = 20; }
-  doc.setFontSize(7);
-  doc.setTextColor(120);
+  if (y > 250){ doc.addPage(); y = 20; }
+  doc.setFontSize(7); doc.setTextColor(120);
   const legal = "AION PERFUMERIA NO UTILIZA SUS FRAGANCIAS Y NO ESTA ASOCIADO DE NINGUN MODO CON LAS MARCAS DE DISENADORES O SUS FABRICANTES. Vendemos perfumes inspirados en disenadores/marcas que se utilizan con fines de referencia a los aromas y aclaramos en atencion al articulo 213 de la Ley de Propiedad Industrial que no guardan ningun tipo de relacion o asociacion con las marcas o nombres que se mencionan. Los nombres, marcas y derechos de autor son propiedad de sus respectivos disenadores/fabricantes. No son copias exactas y no compite con la marca disenadora.";
   const split = doc.splitTextToSize(legal, 182);
   doc.text(split, 14, y);
@@ -1297,7 +1939,6 @@ function exportPDF() {
   showToast('PDF exportado');
 }
 
-/* INIT */
 render();
 </script>
 </body>
