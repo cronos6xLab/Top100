@@ -2,16 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>AION Perfumería // Catálogo</title>
 
-<!-- ═══════════════════════════════════════════════════════════
-     🔤 FUENTES
-     ═══════════════════════════════════════════════════════════
-       - JetBrains Mono → chrome de UI (nav, labels, buttons, metadata)
-       - Inter          → body copy de párrafo largo
-       - Archivo Black  → specimens de display
--->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -20,7 +13,7 @@
 
 <style>
   /* ═══════════════════════════════════════════════════════════
-     🎯 DESIGN TOKENS — Foundry Style
+     🎯 DESIGN TOKENS
      ═══════════════════════════════════════════════════════════ */
   :root {
     --color-ember-orange: #ff4d00;
@@ -45,20 +38,25 @@
     --spacing-24: 24px;
 
     --radius-sm: 2.8px;
-    --radius-lg: 8px;
 
     --surface-canvas: #121212;
     --surface-inverted: #efefef;
 
     --sidebar-width: 260px;
     --page-max-width: 1440px;
+    --ticker-height: 28px;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
 
   /* ═══════════════════════════════════════════════════════════
-     ⬛ CANVAS — Foundry Black
+     ⬛ CANVAS
      ═══════════════════════════════════════════════════════════ */
   body {
     background: var(--surface-canvas);
@@ -68,15 +66,29 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Fast taps on mobile */
+  button, a, .tag, .btn, .select, .chip {
+    touch-action: manipulation;
+  }
+
+  img, svg, canvas, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
   }
 
   /* ═══════════════════════════════════════════════════════════
-     📰 TICKER BAR
+     📰 TICKER
      ═══════════════════════════════════════════════════════════ */
   .ticker {
     position: fixed;
     top: 0; left: 0; right: 0;
-    height: 28px;
+    height: var(--ticker-height);
     background: var(--surface-canvas);
     border-bottom: 1px solid var(--color-chalk-white);
     overflow: hidden;
@@ -94,6 +106,7 @@
     letter-spacing: 0.04em;
     color: var(--color-bone-white);
     padding-left: var(--spacing-20);
+    will-change: transform;
   }
   .ticker__track span {
     display: inline-flex;
@@ -119,7 +132,8 @@
      ═══════════════════════════════════════════════════════════ */
   .sidebar {
     position: fixed;
-    top: 28px; left: 0; bottom: 0;
+    top: var(--ticker-height);
+    left: 0; bottom: 0;
     width: var(--sidebar-width);
     background: var(--surface-canvas);
     border-right: 1px solid var(--color-chalk-white);
@@ -128,6 +142,7 @@
     flex-direction: column;
     gap: var(--spacing-20);
     overflow-y: auto;
+    overscroll-behavior: contain;
     z-index: 50;
   }
   .sidebar::-webkit-scrollbar { width: 4px; }
@@ -144,7 +159,7 @@
     margin-bottom: var(--spacing-4);
   }
 
-  .sb-group { margin-bottom: var(--spacing-4); }
+  .sb-group { margin-bottom: var(--spacing-4); min-width: 0; }
 
   .sb-label {
     font-family: var(--font-mono);
@@ -170,30 +185,43 @@
   .search-box { position: relative; }
   .search-input {
     width: 100%;
-    height: 34px;
+    height: 36px;
     background: transparent;
     border: 1px solid var(--color-chalk-white);
     border-radius: var(--radius-sm);
-    padding: 0 30px 0 12px;
+    padding: 0 34px 0 12px;
     color: var(--color-bone-white);
     font-family: var(--font-mono);
     font-size: var(--text-caption);
     outline: none;
     transition: border-color 0.12s ease;
+    -webkit-appearance: none;
+    appearance: none;
   }
   .search-input:focus { border-color: var(--color-ember-orange); }
   .search-input::placeholder { color: var(--color-ash); }
+
+  /* Kill native iOS search clear decorations */
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+
   .clear-search {
     position: absolute;
     right: 6px; top: 50%;
     transform: translateY(-50%);
-    width: 20px; height: 20px;
+    width: 24px; height: 24px;
     border-radius: var(--radius-sm);
     background: transparent;
     border: none;
     color: var(--color-ash);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1;
     display: none;
     align-items: center;
@@ -201,7 +229,7 @@
   }
   .clear-search:hover { color: var(--color-ember-orange); }
 
-  /* TAG NAV */
+  /* TAGS */
   .sb-tags {
     display: flex;
     flex-direction: column;
@@ -212,7 +240,7 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--spacing-8);
-    padding: 6px 10px;
+    padding: 7px 10px;
     background: transparent;
     color: var(--color-bone-white);
     border: 1px solid transparent;
@@ -227,6 +255,7 @@
     transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
     text-align: left;
     width: 100%;
+    min-width: 0;
   }
   .tag:hover { border-color: var(--color-chalk-white); }
   .tag.active {
@@ -237,14 +266,15 @@
   .tag__count {
     font-size: 10px;
     color: var(--color-ash);
+    flex-shrink: 0;
   }
   .tag.active .tag__count { color: var(--surface-canvas); }
 
   /* SELECT */
   .select {
     width: 100%;
-    height: 34px;
-    padding: 0 28px 0 12px;
+    height: 36px;
+    padding: 0 30px 0 12px;
     background: transparent;
     border: 1px solid var(--color-chalk-white);
     border-radius: var(--radius-sm);
@@ -282,6 +312,7 @@
     transition: background-color 0.12s ease, color 0.12s ease;
     white-space: nowrap;
     border: 1px solid transparent;
+    min-height: 40px;
   }
   .btn--orange {
     border-color: var(--color-ember-orange);
@@ -304,7 +335,7 @@
 
   .sb-actions { display: flex; flex-direction: column; gap: var(--spacing-8); }
 
-  /* SIDEBAR FOOTER */
+  /* FOOTER */
   .sb-footer {
     margin-top: auto;
     padding-top: var(--spacing-20);
@@ -329,13 +360,14 @@
      ═══════════════════════════════════════════════════════════ */
   .main {
     margin-left: var(--sidebar-width);
-    margin-top: 28px;
+    margin-top: var(--ticker-height);
     max-width: calc(var(--page-max-width) - var(--sidebar-width));
+    min-width: 0;
   }
 
   /* HERO */
   .hero {
-    padding: 80px var(--spacing-24) var(--spacing-24);
+    padding: clamp(40px, 8vw, 80px) var(--spacing-24) var(--spacing-24);
     border-bottom: 1px solid var(--color-chalk-white);
   }
   .hero__meta {
@@ -365,12 +397,14 @@
   .hero h1 {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(3rem, 11vw, 150px);
+    font-size: clamp(2.5rem, 12vw, 150px);
     line-height: 0.92;
     letter-spacing: 0.01em;
     color: var(--color-bone-white);
     text-transform: uppercase;
     margin-bottom: var(--spacing-20);
+    word-break: break-word;
+    overflow-wrap: anywhere;
   }
   .hero h1 .accent { color: var(--color-ember-orange); }
   .hero__copy {
@@ -381,7 +415,7 @@
     max-width: 55ch;
   }
 
-  /* COUNTER STRIP */
+  /* COUNTER */
   .counter-strip {
     padding: var(--spacing-12) var(--spacing-24);
     border-bottom: 1px solid var(--color-chalk-white);
@@ -396,6 +430,7 @@
     flex-wrap: wrap;
   }
   .counter-strip .count { color: var(--color-ember-orange); font-weight: 700; }
+
   .sort-wrap {
     display: flex;
     align-items: center;
@@ -404,12 +439,12 @@
   .sort-wrap label { color: var(--color-ash); font-size: 11px; }
   .sort-wrap .select {
     width: auto;
-    height: 28px;
+    height: 30px;
     padding: 0 26px 0 10px;
     font-size: 11px;
   }
 
-  /* CHIPS DE FILTROS ACTIVOS */
+  /* CHIPS */
   .chips {
     display: flex;
     flex-wrap: wrap;
@@ -429,6 +464,7 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    max-width: 100%;
   }
   .chip button {
     background: transparent;
@@ -452,8 +488,10 @@
     border-left: 1px solid var(--color-chalk-white);
     border-top: 1px solid var(--color-chalk-white);
   }
-  @media (min-width: 700px)  { .grid { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 1100px) { .grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+  @media (min-width: 700px)  { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1500px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
   .card {
     border-right: 1px solid var(--color-chalk-white);
@@ -463,8 +501,9 @@
     flex-direction: column;
     gap: var(--spacing-12);
     transition: background-color 0.12s ease;
-    min-height: 180px;
+    min-height: clamp(160px, 22vw, 200px);
     position: relative;
+    min-width: 0;
   }
   .card:hover { background: #181818; }
 
@@ -484,12 +523,13 @@
   .card__name {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(1.3rem, 2.4vw, 1.9rem);
+    font-size: clamp(1.1rem, 2.2vw, 1.9rem);
     line-height: 0.98;
     letter-spacing: 0.005em;
     color: var(--color-bone-white);
     text-transform: uppercase;
     word-break: break-word;
+    overflow-wrap: anywhere;
   }
 
   .card__meta {
@@ -509,6 +549,8 @@
     letter-spacing: 0.04em;
     border: 1px solid var(--color-soot);
     color: var(--color-ash);
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
   .badge--orange { border-color: var(--color-ember-orange); color: var(--color-ember-orange); }
   .badge--bone   { border-color: var(--color-chalk-white); color: var(--color-bone-white); }
@@ -522,7 +564,7 @@
   }
   .empty__title {
     font-family: var(--font-display);
-    font-size: clamp(2rem, 6vw, 3rem);
+    font-size: clamp(1.8rem, 6vw, 3rem);
     text-transform: uppercase;
     color: var(--color-bone-white);
     line-height: 0.95;
@@ -544,6 +586,7 @@
     border-bottom: 1px solid var(--color-chalk-white);
     display: flex;
     gap: var(--spacing-12);
+    flex-wrap: wrap;
   }
   .legal__mark {
     flex-shrink: 0;
@@ -557,6 +600,7 @@
     font-size: 12px;
     font-weight: 700;
   }
+  .legal > div:last-child { min-width: 0; flex: 1 1 260px; }
   .legal__title {
     font-family: var(--font-mono);
     font-size: 11px;
@@ -573,6 +617,7 @@
     color: var(--color-ash);
     text-transform: uppercase;
     letter-spacing: 0.02em;
+    overflow-wrap: anywhere;
   }
 
   /* FOOTER */
@@ -592,7 +637,8 @@
   /* TOAST */
   .toast {
     position: fixed;
-    bottom: 24px; left: 50%;
+    bottom: max(24px, env(safe-area-inset-bottom, 24px));
+    left: 50%;
     transform: translateX(-50%) translateY(10px);
     background: var(--color-bone-white);
     color: var(--surface-canvas);
@@ -607,6 +653,8 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease, transform 0.25s ease;
+    max-width: calc(100vw - 32px);
+    text-align: center;
   }
   .toast.show {
     opacity: 1;
@@ -614,41 +662,126 @@
   }
 
   /* ═══════════════════════════════════════════════════════════
-     📱 RESPONSIVE
+     📱 RESPONSIVE — Tablet
      ═══════════════════════════════════════════════════════════ */
   @media (max-width: 900px) {
+    :root {
+      --ticker-height: 24px;
+      --sidebar-width: 100%;
+    }
+
+    /* iOS: 16px min font prevents auto-zoom on focus */
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+
+    .ticker__track {
+      font-size: 10px;
+      animation-duration: 26s;
+    }
+
     .sidebar {
       position: relative;
-      top: 28px;
+      top: 0;
+      margin-top: var(--ticker-height);
       width: 100%;
+      max-width: 100%;
       border-right: none;
       border-bottom: 1px solid var(--color-chalk-white);
       flex-direction: column;
       padding: var(--spacing-20);
       max-height: none;
+      overflow: visible;
+      overscroll-behavior: auto;
     }
-    .sb-tags { flex-direction: row; flex-wrap: wrap; }
-    .sb-tags .tag { width: auto; flex: 0 1 auto; }
-    .sb-actions { flex-direction: row; }
-    .main { margin-left: 0; margin-top: 0; }
+
+    .sb-tags {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .sb-tags .tag {
+      width: auto;
+      flex: 0 1 auto;
+    }
+
+    .sb-actions {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .sb-actions .btn { flex: 1 1 auto; }
+
+    .search-input { height: 44px; padding: 0 40px 0 14px; }
+    .select { height: 44px; }
+    .sort-wrap .select { height: 40px; }
+
+    .main {
+      margin-left: 0;
+      margin-top: 0;
+      max-width: 100%;
+    }
+
     .hero { padding: var(--spacing-24) var(--spacing-20); }
-    .hero h1 { font-size: clamp(2.5rem, 14vw, 5rem); }
-    .counter-strip, .chips { padding-left: var(--spacing-20); padding-right: var(--spacing-20); }
+    .hero h1 { font-size: clamp(2.25rem, 13vw, 5rem); }
+
+    .counter-strip,
+    .chips { padding-left: var(--spacing-20); padding-right: var(--spacing-20); }
+
     .legal { padding: var(--spacing-20); }
   }
 
   @media (max-width: 640px) {
-    .card { padding: var(--spacing-12) var(--spacing-20); min-height: 160px; }
-    .card__name { font-size: 1.35rem; }
+    .hero__meta {
+      font-size: 10px;
+      gap: 8px;
+    }
+
+    .counter-strip {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-8);
+    }
+    .sort-wrap {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .sort-wrap .select {
+      flex: 1;
+      max-width: 220px;
+    }
+
+    .card {
+      padding: var(--spacing-20);
+      min-height: 150px;
+    }
+
     .footer { padding: var(--spacing-20); }
+
+    .legal__mark { width: 24px; height: 24px; font-size: 11px; }
+    .legal__body { font-size: 10px; }
+  }
+
+  @media (max-width: 400px) {
+    .logo { font-size: 20px; }
+    .sb-actions { flex-direction: column; }
+    .sb-actions .btn { width: 100%; }
+    .hero h1 { font-size: clamp(2rem, 12vw, 3rem); }
+  }
+
+  /* Landscape phones */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .sidebar { max-height: 100vh; overflow-y: auto; }
+  }
+
+  /* Prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .ticker__track { animation: none; }
+    html { scroll-behavior: auto; }
   }
 </style>
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════════════════════
-       📰 TICKER BAR
-       ═══════════════════════════════════════════════════════════ -->
+  <!-- TICKER -->
   <div class="ticker" aria-hidden="true">
     <div class="ticker__track">
       <span>AION PERFUMERÍA</span>
@@ -666,18 +799,16 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════════════════
-       📌 SIDEBAR — Filtros como tags invertidos
-       ═══════════════════════════════════════════════════════════ -->
+  <!-- SIDEBAR -->
   <aside class="sidebar">
 
     <div class="logo">Aion<br>Perf.</div>
 
-    <!-- BÚSQUEDA -->
     <div class="sb-group">
       <div class="sb-label">Búsqueda</div>
       <div class="search-box">
         <input id="search" class="search-input" type="search" autocomplete="off"
+               inputmode="search" enterkeyhint="search"
                placeholder="Yara, Dior, Árabe…"
                oninput="onSearch()"
                onkeydown="if(event.key==='Escape'){clearSearch()}">
@@ -685,32 +816,27 @@
       </div>
     </div>
 
-    <!-- SEGMENTO -->
     <div class="sb-group">
       <div class="sb-label">Segmento</div>
       <div class="sb-tags" id="segmentTags" role="group" aria-label="Filtrar por segmento"></div>
     </div>
 
-    <!-- FAMILIA -->
     <div class="sb-group">
       <div class="sb-label">Familia</div>
       <div class="sb-tags" id="familyTags" role="group" aria-label="Filtrar por familia"></div>
     </div>
 
-    <!-- DISEÑADOR -->
     <div class="sb-group">
       <div class="sb-label">Diseñador</div>
       <select id="designer" class="select" onchange="render()" aria-label="Filtrar por diseñador"></select>
       <div id="designerCount" style="font-family:var(--font-mono);font-size:10px;color:var(--color-ash);margin-top:6px;text-transform:uppercase;letter-spacing:0.04em"></div>
     </div>
 
-    <!-- ACCIONES -->
     <div class="sb-actions">
       <button id="copyBtn" class="btn btn--ghost btn--full" onclick="copyList()">Copiar lista</button>
       <button id="pdfBtn"  class="btn btn--orange btn--full" onclick="exportPDF()">Exportar PDF</button>
     </div>
 
-    <!-- FOOTER -->
     <div class="sb-footer">
       <span>© 2026 // AION</span>
       <a onclick="resetAll();return false">→ Reset filtros</a>
@@ -718,12 +844,9 @@
 
   </aside>
 
-  <!-- ═══════════════════════════════════════════════════════════
-       🖥️ MAIN
-       ═══════════════════════════════════════════════════════════ -->
+  <!-- MAIN -->
   <main class="main">
 
-    <!-- HERO -->
     <section class="hero">
       <div class="hero__meta">
         <span class="meta-item"><span class="dot"></span> AION / CATÁLOGO</span>
@@ -740,7 +863,6 @@
       </p>
     </section>
 
-    <!-- COUNTER STRIP -->
     <div class="counter-strip">
       <span id="counter">Mostrando 0 de 0</span>
       <div class="sort-wrap">
@@ -754,20 +876,16 @@
       </div>
     </div>
 
-    <!-- CHIPS -->
     <div id="activeChips" class="chips" style="display:none"></div>
 
-    <!-- GRID -->
     <div id="grid" class="grid" aria-live="polite"></div>
 
-    <!-- EMPTY -->
     <div id="empty" class="empty">
       <div class="empty__title">Sin<br>Resultados<span class="accent">.</span></div>
       <div class="empty__sub">Prueba con otros filtros</div>
       <button class="btn btn--orange" onclick="resetAll()">Limpiar filtros</button>
     </div>
 
-    <!-- LEGAL -->
     <div class="legal">
       <div class="legal__mark">§</div>
       <div>
@@ -778,7 +896,6 @@
       </div>
     </div>
 
-    <!-- FOOTER -->
     <footer class="footer">
       <span>// FIN DEL CATÁLOGO</span>
       <span>FRAGANCIAS INSPIRADAS · 2026</span>
@@ -789,9 +906,7 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   📦 DATA
-   ═══════════════════════════════════════════════════════════ */
+/* DATA */
 const perfumes = [
   {completo:"Good Girl - Carolina Herrera", disenador:"Carolina Herrera", segmento:"Mujer", familia:"Dulce"},
   {completo:"Black Opium - Yves Saint Laurent", disenador:"Yves Saint Laurent", segmento:"Mujer", familia:"Dulce"},
@@ -881,9 +996,6 @@ const perfumes = [
   {completo:"Erba Pura - Xerjoff", disenador:"Xerjoff", segmento:"Unisex", familia:"Nicho"}
 ];
 
-/* ═══════════════════════════════════════════════════════════
-   🔧 ESTADO
-   ═══════════════════════════════════════════════════════════ */
 let currentSegment = "Todos";
 let currentFamily  = "Todas";
 let currentSort    = "catalog";
@@ -895,9 +1007,7 @@ const FAMILIES = ["Todas", "Dulce", "Floral", "Fresco", "Amaderado", "Árabe", "
 
 document.getElementById('totalCount').textContent = perfumes.length;
 
-/* ═══════════════════════════════════════════════════════════
-   🏷️ SEGMENT TAGS
-   ═══════════════════════════════════════════════════════════ */
+/* SEGMENT TAGS */
 const segWrap = document.getElementById('segmentTags');
 SEGMENTS.forEach(s => {
   const count = s === "Todos" ? perfumes.length : perfumes.filter(p => p.segmento === s).length;
@@ -911,9 +1021,7 @@ SEGMENTS.forEach(s => {
   segWrap.appendChild(b);
 });
 
-/* ═══════════════════════════════════════════════════════════
-   🏷️ FAMILY TAGS
-   ═══════════════════════════════════════════════════════════ */
+/* FAMILY TAGS */
 const famWrap = document.getElementById('familyTags');
 FAMILIES.forEach(f => {
   const count = f === "Todas" ? perfumes.length : perfumes.filter(p => p.familia === f).length;
@@ -927,9 +1035,7 @@ FAMILIES.forEach(f => {
   famWrap.appendChild(b);
 });
 
-/* ═══════════════════════════════════════════════════════════
-   🏷️ DESIGNER SELECT
-   ═══════════════════════════════════════════════════════════ */
+/* DESIGNER SELECT */
 const designers = [...new Set(perfumes.map(p => p.disenador))]
   .sort((a,b) => a.localeCompare(b, 'es'));
 const sel = document.getElementById('designer');
@@ -937,9 +1043,7 @@ sel.innerHTML = '<option value="Todos">Todos los diseñadores</option>' +
   designers.map(d => `<option value="${d}">${d}</option>`).join('');
 document.getElementById('designerCount').textContent = designers.length + ' casas';
 
-/* ═══════════════════════════════════════════════════════════
-   🎛️ FILTROS
-   ═══════════════════════════════════════════════════════════ */
+/* FILTROS */
 function setSegment(btn) {
   document.querySelectorAll('[data-segment]').forEach(b => {
     b.classList.remove('active');
@@ -991,9 +1095,7 @@ function resetAll() {
   render();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   🔎 FILTRADO + ORDEN
-   ═══════════════════════════════════════════════════════════ */
+/* FILTRADO + ORDEN */
 function getFiltered() {
   const q = document.getElementById('search').value.toLowerCase().trim();
   const d = document.getElementById('designer').value;
@@ -1018,9 +1120,7 @@ function getSorted(list) {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   🎨 RENDER
-   ═══════════════════════════════════════════════════════════ */
+/* RENDER */
 function render() {
   const filtered = getSorted(getFiltered());
   filteredCache = filtered;
@@ -1112,9 +1212,7 @@ function resetChip(type) {
   render();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   🍞 TOAST
-   ═══════════════════════════════════════════════════════════ */
+/* TOAST */
 let toastTimer = null;
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -1124,9 +1222,7 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   📋 COPIAR
-   ═══════════════════════════════════════════════════════════ */
+/* COPIAR */
 function copyList() {
   if (filteredCache.length === 0) { showToast('No hay perfumes para copiar'); return; }
   const text = filteredCache.map((p, i) => `${i + 1}. ${p.completo}`).join('\n');
@@ -1149,9 +1245,7 @@ function fallbackCopy(text, cb) {
   document.body.removeChild(ta);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   📄 PDF
-   ═══════════════════════════════════════════════════════════ */
+/* PDF */
 function exportPDF() {
   if (filteredCache.length === 0) { showToast('No hay perfumes para exportar'); return; }
   const { jsPDF } = window.jspdf;
@@ -1203,9 +1297,7 @@ function exportPDF() {
   showToast('PDF exportado');
 }
 
-/* ═══════════════════════════════════════════════════════════
-   🚀 INIT
-   ═══════════════════════════════════════════════════════════ */
+/* INIT */
 render();
 </script>
 </body>
